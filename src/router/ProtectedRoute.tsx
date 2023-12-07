@@ -1,19 +1,19 @@
+import { useUser } from 'context/UserContext'
 import { useEffect, useState } from 'react'
 
 import { Navigate } from 'react-router-dom'
-//import { useUser } from '@/context/UserContext'
 
 type ProtectedRouteProps = {
   children: JSX.Element
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  //const { verifyAuth } = useUser()
+  const { verifyAuth } = useUser()
   const [isLogged, setIsLogged] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
   const checkAuth = async () => {
-    const isAuth = false // await verifyAuth()
+    const isAuth = await verifyAuth()
     setIsLogged(isAuth)
     setIsLoading(false)
   }
