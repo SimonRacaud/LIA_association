@@ -1,10 +1,11 @@
+import HomePage from "page/home/HomePage";
 import SignIn from "page/signin/SignIn";
 import SignUp from "page/signup/SignUp";
 
 export const routes = [
     {
       path: '/',
-      element: <SignIn />,
+      element: <HomePage />,
       protected: true,
     },
     {
