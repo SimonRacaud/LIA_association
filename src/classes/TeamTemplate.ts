@@ -7,13 +7,17 @@ export const teamTypeToString = (teamType: TeamType): string => {
     return TeamType[teamType];
 };
 
+export const teamTypeOptions = [ TeamType.RAMASSAGE, TeamType.DISTRIB ]
+
 export default class TeamTemplate {
+    uuid: string
     title: string
     type: TeamType
     note: string
     maxMember: number
 
-    constructor(title: string, type: TeamType, note: string, maxMember: number) {
+    constructor(uuid: string, title: string, type: TeamType, note: string, maxMember: number) {
+        this.uuid = uuid
         this.title = title
         this.type = type
         this.note = note

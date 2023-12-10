@@ -7,8 +7,8 @@ import { useUser } from "context/UserContext";
 
 export interface EventDialogProps {
     open: boolean
-    event: Event
-    onClose: (event: Event) => void;
+    event: Event | undefined
+    onClose: () => void
 }
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -55,7 +55,7 @@ function EventTeam({team, user}: EventTeamProps) {
                     <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
                     {team.members.map((user) => {
                         return (
-                            <Item>{user.username}</Item>
+                            <Item key={user.id}>{user.username}</Item>
                         )
                     })}
                     </Stack>
@@ -74,24 +74,40 @@ function EventTeam({team, user}: EventTeamProps) {
     )
 }
 
-export default function EventDialog(props: EventDialogProps) {
-    const { open, event, onClose } = props;
+export default function EventShowDialog({ open, event, onClose}: EventDialogProps) {
     const { user } = useUser()
 
-    const handleClose = () => {
-        onClose(event);
-    };
+    const onSubscribeEventTeam = (eventTeam: Team) => {
+        const userId = user?.id
+        if (userId) {
+            // add 'user' to team
+            const userMember = eventTeam.members.find((v) => v.id == user.id)
+            if (userMember == undefined) {
+                // The current user isn't already a member
+                eventTeam.members.push(user)
+                // TODO : API Update
+            }
+        }
+    }
+    const onUnsubscribeEventTeam = (eventTeam: Team) => {
+        const userId = user?.id
+        if (userId) {
+            // remove 'user" from team
+            eventTeam.members = eventTeam.members.filter((v) => v.id != user.id)
+            // TODO : API Update
+        }
+    }
 
     return (
-        <Dialog onClose={handleClose} open={open} maxWidth="xl">
-            <DialogTitle>{event.title}</DialogTitle>
+        <Dialog onClose={onClose} open={open} maxWidth="lg">
+            <DialogTitle>{event?.title}</DialogTitle>
             <Container sx={{
                 display: 'flex',
                 flexDirection: 'row',
                 flexWrap: 'wrap',
             }}>
-                {event.teams.map((team) => {
-                    return <EventTeam team={team} user={user} />
+                {event?.teams.map((team) => {
+                    return <EventTeam key={team.uuid} team={team} user={user} />
                 })}
             </Container>
         </Dialog>

@@ -1,69 +1,96 @@
-import { Box, Button, Container, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Button, Container, IconButton, Pagination, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import Event from "classes/Event";
 import Team from "classes/Team";
 import TeamTemplate, { TeamType } from "classes/TeamTemplate";
 import User from "classes/User";
 import ShowDate from "components/ShowDate";
 import { useState } from "react";
-import EventDialog from "./EventDialog";
+import EventShowDialog from "./EventShowDialog";
+import EventEditDialog from './EventEditDialog';
 import SettingsIcon from '@mui/icons-material/Settings';
+import CreateIcon from '@mui/icons-material/Add';
+import dayjs from "dayjs";
 
-function HomeHeader() {
+type HomeHeaderProps = {
+    onClickSettings: () => void
+    onClickCreateEvent: () => void
+}
+function HomeHeader({onClickSettings, onClickCreateEvent}: HomeHeaderProps) {
     return (
-        <Box sx={{ 
+        <Stack sx={{ 
             display: 'flex',
             flexDirection: 'row-reverse',
             my: 1
          }}>
-            <IconButton aria-label="settings" size='large'>
+            <IconButton aria-label="settings" size='large' onClick={onClickSettings}>
                 <SettingsIcon />
             </IconButton>
-        </Box>
+            <IconButton aria-label="create" size='large' onClick={onClickCreateEvent}>
+                <CreateIcon />
+            </IconButton>
+        </Stack>
     )
 }
 
 export default function HomePage() {
-    const [ openDialog, setOpenDialog ] = useState(false)
-    const [ selectedEvent, setSelecteEvent ] = useState(0)
+    const [ openShowDialog, setOpenShowDialog ] = useState(false)
+    const [ openEditDialog, setOpenEditDialog ] = useState(false)
+    const [ selectedEvent, setSelecteEvent ] = useState(-1)
 
     const rows = [
         // TODO : debug entry
-        new Event("Distribution", new Date(), [
-            new Team(
-                new TeamTemplate("Leclerc sablé / super U arnage", TeamType.RAMASSAGE, "9876 A", 2),
+        new Event("", "Distribution", dayjs(), [
+            new Team("1",
+                new TeamTemplate("1", "Leclerc sablé / super U arnage", TeamType.RAMASSAGE, "9876 A", 2),
                 []
             ),
-            new Team(
-                new TeamTemplate("Carrefour Sud / La Pointe", TeamType.RAMASSAGE, "Sud: 02.43.61.30.96, Pointe: 2312 (v)", 2),
+            new Team("2",
+                new TeamTemplate("2", "Carrefour Sud / La Pointe", TeamType.RAMASSAGE, "Sud: 02.43.61.30.96, Pointe: 2312 (v)", 2),
                 [
                     new User("a", "Tom", "USER", new Date(), "tom@lia.fr"),
                     new User("", "Simon", "ADMIN", new Date(), "simon@lia.fr"),
                 ]
             ),
-            new Team(
-                new TeamTemplate("U express / Bollé", TeamType.RAMASSAGE, "02.43.34.57.61", 1),
+            new Team("3",
+                new TeamTemplate("3", "U express / Bollé", TeamType.RAMASSAGE, "02.43.34.57.61", 1),
                 []
             ),
-            new Team(
-                new TeamTemplate("Leclerc fontenelle drive / Super U bonnétable", TeamType.RAMASSAGE, "Lec: 1234, Sup: 2312 (v)", 2),
+            new Team("4",
+                new TeamTemplate("4", "Leclerc fontenelle drive / Super U bonnétable", TeamType.RAMASSAGE, "Lec: 1234, Sup: 2312 (v)", 2),
                 []
             ),
-            new Team(
-                new TeamTemplate("Utile St george du bois", TeamType.RAMASSAGE, "2312 (v)", 1),
+            new Team("5",
+                new TeamTemplate("5", "Utile St george du bois", TeamType.RAMASSAGE, "2312 (v)", 1),
                 []
             )
         ]),
     ];
 
-    const onCloseDialog = (event: Event) => {
-        // TODO update event
-        setOpenDialog(false)
+    const onCloseDialog = () => {
+        setOpenShowDialog(false)
+        setOpenEditDialog(false)
+        setSelecteEvent(-1)
     }
-
+    const onEditEvent = (index: number) => () => {
+        setSelecteEvent(index)
+        setOpenEditDialog(true)
+    }
+    const onDeleteEvent = (uuid: string) => () => {
+        // Send remove to API
+        // Refresh list
+        // TODO
+    }
+    const onCreateEvent = () => {
+        setSelecteEvent(-1)
+        setOpenEditDialog(true)
+    }
+    const onOpenSettings = () => {
+        // TODO: settings
+    }
 
     return (
         <Container>
-            <HomeHeader />
+            <HomeHeader onClickSettings={onOpenSettings} onClickCreateEvent={onCreateEvent} />
             <TableContainer component={Paper} >
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
@@ -78,7 +105,7 @@ export default function HomePage() {
                     <TableBody>
                         {rows.map((row: Event, index: number) => (
                             <TableRow
-                            key={row.title}
+                            key={row.uuid}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell component="th" scope="row">
@@ -88,20 +115,22 @@ export default function HomePage() {
                                 <TableCell align="right">
                                     <Button variant="contained" onClick={() => {
                                     setSelecteEvent(index)
-                                    setOpenDialog(true)
+                                    setOpenShowDialog(true)
                                     }}>Monter</Button>
                                 </TableCell>
                                 <TableCell align="right">
-                                    <Button variant="outlined" disabled>Éditer</Button>
+                                    <Button variant="outlined" onClick={onEditEvent(index)}>Éditer</Button>
                                 </TableCell>
                                 <TableCell align="right">
-                                    <Button variant="outlined" disabled>Supprimer</Button>
+                                    <Button variant="outlined" onClick={onDeleteEvent(row.uuid)} disabled>Supprimer</Button>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
-                <EventDialog open={openDialog} event={rows[selectedEvent]} onClose={onCloseDialog} ></EventDialog>
+                <Pagination count={5} color="primary" sx={{ my: 2 }} disabled />
+                <EventShowDialog open={openShowDialog} event={rows.at(selectedEvent)} onClose={onCloseDialog} ></EventShowDialog>
+                <EventEditDialog open={openEditDialog} onClose={onCloseDialog} toEdit={rows.at(selectedEvent)} />
             </TableContainer>
         </Container>
     )

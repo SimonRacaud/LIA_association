@@ -1,12 +1,18 @@
+import { Dayjs } from "dayjs";
 
 type ShowDateProps = {
-  date: Date
+  date: Dayjs
 }
 
 export default function ShowDate({ date }: ShowDateProps) {
   const options = { day: '2-digit', month: 'long' };
 
   return (
-      <p>{date.toLocaleString('fr-FR', options as Intl.DateTimeFormatOptions)}</p>
+      <p>
+        {date.toDate().toLocaleString(
+          'fr-FR', 
+          options as Intl.DateTimeFormatOptions
+        )}
+      </p>
   );
 }
