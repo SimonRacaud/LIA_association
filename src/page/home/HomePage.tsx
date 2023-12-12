@@ -130,7 +130,8 @@ export default function HomePage() {
                 </Table>
                 <Pagination count={5} color="primary" sx={{ my: 2 }} disabled />
                 <EventShowDialog open={openShowDialog} event={rows.at(selectedEvent)} onClose={onCloseDialog} ></EventShowDialog>
-                <EventEditDialog open={openEditDialog} onClose={onCloseDialog} toEdit={rows.at(selectedEvent)} />
+                <EventEditDialog open={openEditDialog} onClose={onCloseDialog} 
+                    toEdit={selectedEvent >= 0 ? rows.at(selectedEvent) : undefined} />
             </TableContainer>
         </Container>
     )
