@@ -2,7 +2,7 @@ import { Button, Container, IconButton, Pagination, Paper, Stack, Table, TableBo
 import Event from "classes/Event";
 import Team from "classes/Team";
 import TeamTemplate, { TeamType } from "classes/TeamTemplate";
-import User from "classes/User";
+import User, { UserType } from "classes/User";
 import ShowDate from "components/ShowDate";
 import { useState } from "react";
 import EventShowDialog from "./EventShowDialog";
@@ -47,8 +47,8 @@ export default function HomePage() {
             new Team("2",
                 new TeamTemplate("2", "Carrefour Sud / La Pointe", TeamType.RAMASSAGE, "Sud: 02.43.61.30.96, Pointe: 2312 (v)", 2),
                 [
-                    new User("a", "Tom", "USER", new Date(), "tom@lia.fr"),
-                    new User("", "Simon", "ADMIN", new Date(), "simon@lia.fr"),
+                    new User("a", "Tom", UserType.MEMBRE, new Date(), "tom@lia.fr"),
+                    new User("", "Simon", UserType.ADMIN, new Date(), "simon@lia.fr"),
                 ]
             ),
             new Team("3",
@@ -109,7 +109,7 @@ export default function HomePage() {
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell component="th" scope="row">
-                                    <ShowDate date={row.date} />
+                                    <ShowDate dateDayjs={row.date} />
                                 </TableCell>
                                 <TableCell>{row.title}</TableCell>
                                 <TableCell align="right">

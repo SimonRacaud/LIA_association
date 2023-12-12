@@ -4,9 +4,9 @@ import { DatePicker } from "@mui/x-date-pickers";
 import Event from "classes/Event";
 import TeamTemplate, { TeamType } from "classes/TeamTemplate";
 import { useEffect, useReducer, useState } from "react";
-import TeamTemplateForm from "./TeamTemplateForm";
 import Team from "classes/Team";
 import RemoveIcon from '@mui/icons-material/Delete';
+import TeamForm from "./TeamForm";
 
 
 type EventFormProps = {
@@ -62,8 +62,9 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
         setEvent(event)
         forceUpdate()
     }
-    const updateTemplate = (team: Team) => (template: TeamTemplate, update: boolean) => {
-        team.template = template
+    const updateTeam = (index: number) => (team: Team, update: boolean) => {
+        if (index >= 0 && index < event.teams.length)
+            event.teams[index] = team
         setEvent(event)
         if (update)
             forceUpdate()
@@ -73,7 +74,6 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
         <Stack sx={{ 
             m: 2, 
             minHeight: 200,
-            width: 500
         }} spacing={2}>
             <TextField id="title" label="Titre" variant="standard" defaultValue={event.title} onChange={(e) => {
                 event.title = e.target.value
@@ -85,7 +85,7 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
             {event.teams.length == 0 && 
                 <Typography variant="subtitle2" >Aucune équipe dans l'événement</Typography>
             }
-            {event.teams.map((team) => {
+            {event.teams.map((team, index) => {
                 return (
                     <Card key={team.template.title} sx={{ p: 2, m: 1 }}>
                         <Container sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -93,7 +93,7 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
                                 <RemoveIcon />
                             </IconButton>
                         </Container>
-                        <TeamTemplateForm template={team.template} setTemplate={updateTemplate(team)} />
+                        <TeamForm team={team} setTeam={updateTeam(index)} />
                     </Card>
                 )
             })}

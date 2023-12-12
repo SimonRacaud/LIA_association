@@ -1,14 +1,24 @@
+
+export enum UserType {
+  MEMBRE,
+  ADMIN
+}
+export const userTypeToString = (type: UserType): string => {
+  return UserType[type];
+};
+export const userTypeOptions = [ UserType.MEMBRE, UserType.ADMIN ]
+
 export default class User {
   id: string
   username: string
-  role: string
+  role: UserType
   created_at: Date
   email: string
 
   constructor(
     id: string,
     username: string,
-    role: string,
+    role: UserType,
     created_at: Date,
     email: string
   ) {
