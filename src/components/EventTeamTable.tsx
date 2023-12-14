@@ -69,7 +69,7 @@ export default function EventTeamTable({event, user, onSubscribeTeam, onUnsubscr
                 </TableHead>
                 <TableBody>
                 {event.teams.map((team) => (
-                    <EventTeamTableRow team={team} user={user} 
+                    <EventTeamTableRow key={team.uuid} team={team} user={user} 
                         onSubscribeTeam={onSubscribeTeam} 
                         onUnsubscribeTeam={onUnsubscribeTeam} />
                 ))}
