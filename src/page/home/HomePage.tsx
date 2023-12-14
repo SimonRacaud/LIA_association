@@ -1,4 +1,4 @@
-import { Button, Container, IconButton, Pagination, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Button, Container, IconButton, Pagination, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import Event from "classes/Event";
 import Team from "classes/Team";
 import TeamTemplate, { TeamType } from "classes/TeamTemplate";
@@ -11,16 +11,21 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import CreateIcon from '@mui/icons-material/Add';
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "context/UserContext";
+import { Item } from "components/EventTeamCardList";
 
 type HomeHeaderProps = {
     onClickSettings: () => void
     onClickCreateEvent: () => void
 }
 function HomeHeader({onClickSettings, onClickCreateEvent}: HomeHeaderProps) {
+    const { user } = useUser()
+
     return (
         <Stack sx={{ 
             display: 'flex',
             flexDirection: 'row-reverse',
+            alignItems: 'center',
             my: 1
          }}>
             <IconButton aria-label="settings" size='large' onClick={onClickSettings}>
@@ -29,6 +34,12 @@ function HomeHeader({onClickSettings, onClickCreateEvent}: HomeHeaderProps) {
             <IconButton aria-label="create" size='large' onClick={onClickCreateEvent}>
                 <CreateIcon />
             </IconButton>
+            <Typography variant="caption" color='text.secondary' sx={{
+                mr: 1
+            }}>{user?.username}</Typography>
+            {user?.role == UserType.ADMIN &&
+                <Item sx={{ mx: 2 }}>Administrateur</Item>
+            }
         </Stack>
     )
 }
