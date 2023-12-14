@@ -13,13 +13,14 @@ import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "context/UserContext";
 import { Item } from "components/EventTeamCardList";
+import AlertDialog from "components/AlertDialog";
 
 type HomeHeaderProps = {
     onClickSettings: () => void
     onClickCreateEvent: () => void
+    user?: User
 }
-function HomeHeader({onClickSettings, onClickCreateEvent}: HomeHeaderProps) {
-    const { user } = useUser()
+function HomeHeader({onClickSettings, onClickCreateEvent, user}: HomeHeaderProps) {
 
     return (
         <Stack sx={{ 
@@ -47,8 +48,10 @@ function HomeHeader({onClickSettings, onClickCreateEvent}: HomeHeaderProps) {
 export default function HomePage() {
     const [ openShowDialog, setOpenShowDialog ] = useState(false)
     const [ openEditDialog, setOpenEditDialog ] = useState(false)
-    const [ selectedEvent, setSelecteEvent ] = useState(-1)
+    const [ openAlertDialog, setOpenAlertDialog ] = useState(false)
+    const [ selectedEvent, setSelecteEvent ] = useState<Event | undefined>()
     const navigate = useNavigate()
+    const { user } = useUser()
 
     const rows = [
         // TODO : debug entry
@@ -82,28 +85,36 @@ export default function HomePage() {
     const onCloseDialog = () => {
         setOpenShowDialog(false)
         setOpenEditDialog(false)
-        setSelecteEvent(-1)
+        setSelecteEvent(undefined)
     }
-    const onEditEvent = (index: number) => () => {
-        setSelecteEvent(index)
+    const onEditEvent = (event: Event) => () => {
+        setSelecteEvent(event)
         setOpenEditDialog(true)
     }
     const onDeleteEvent = (uuid: string) => () => {
-        // Send remove to API
-        // Refresh list
-        // TODO
+        setSelecteEvent(_getEventFromUuid(uuid))
+        setOpenAlertDialog(true)
+    }
+    const onApplyDeleteEvent = () => {
+        setOpenAlertDialog(false)
+        // TODO : API call : remove event (selectedEvent)
+        // TODO : Refresh list
     }
     const onCreateEvent = () => {
-        setSelecteEvent(-1)
+        setSelecteEvent(undefined)
         setOpenEditDialog(true)
     }
     const onOpenSettings = () => {
         navigate('/settings')
     }
+    const _getEventFromUuid = (uuid: string) => {
+        return rows.find((e: Event) => e.uuid == uuid)
+    }
 
     return (
         <Container>
-            <HomeHeader onClickSettings={onOpenSettings} onClickCreateEvent={onCreateEvent} />
+            <HomeHeader onClickSettings={onOpenSettings} 
+                onClickCreateEvent={onCreateEvent} user={user} />
             <TableContainer component={Paper} >
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
@@ -116,36 +127,42 @@ export default function HomePage() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row: Event, index: number) => (
+                        {rows.map((event: Event) => (
                             <TableRow
-                            key={row.uuid}
+                            key={event.uuid}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell component="th" scope="row">
-                                    <ShowDate dateDayjs={row.date} />
+                                    <ShowDate dateDayjs={event.date} />
                                 </TableCell>
-                                <TableCell>{row.title}</TableCell>
+                                <TableCell>{event.title}</TableCell>
                                 <TableCell align="right">
                                     <Button variant="contained" onClick={() => {
-                                    setSelecteEvent(index)
+                                    setSelecteEvent(event)
                                     setOpenShowDialog(true)
-                                    }}>Monter</Button>
+                                    }}>Montrer</Button>
                                 </TableCell>
                                 <TableCell align="right">
-                                    <Button variant="outlined" onClick={onEditEvent(index)}>Éditer</Button>
+                                    <Button variant="outlined" onClick={onEditEvent(event)} 
+                                        disabled={user?.role != UserType.ADMIN}>Éditer</Button>
                                 </TableCell>
                                 <TableCell align="right">
-                                    <Button variant="outlined" onClick={onDeleteEvent(row.uuid)} disabled>Supprimer</Button>
+                                    <Button variant="outlined" onClick={onDeleteEvent(event.uuid)} 
+                                        disabled={user?.role != UserType.ADMIN}>Supprimer</Button>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
                 <Pagination count={5} color="primary" sx={{ my: 2 }} disabled />
-                <EventShowDialog open={openShowDialog} event={rows.at(selectedEvent)} onClose={onCloseDialog} ></EventShowDialog>
+                <EventShowDialog open={openShowDialog} event={selectedEvent} onClose={onCloseDialog} ></EventShowDialog>
                 <EventEditDialog open={openEditDialog} onClose={onCloseDialog} 
-                    toEdit={selectedEvent >= 0 ? rows.at(selectedEvent) : undefined} />
+                    toEdit={selectedEvent} />
             </TableContainer>
+            <AlertDialog open={openAlertDialog} 
+                onClose={() => setOpenAlertDialog(false)} 
+                onAgree={onApplyDeleteEvent} 
+                question="Confirmer la suppression ?" />
         </Container>
     )
 }
