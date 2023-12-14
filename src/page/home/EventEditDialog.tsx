@@ -16,12 +16,9 @@ export default function EventEditDialog({open, onClose, toEdit}: EventEditDialog
     }
 
     return (
-        <Dialog onClose={onClose} open={open} maxWidth='lg' fullWidth={true}>
+        <Dialog onClose={onClose} open={open} maxWidth='sm' fullWidth>
             <DialogTitle>Création d'un événement</DialogTitle>
-            <Container sx={{
-                display: 'flex',
-                justifyContent: 'center',
-            }}>
+            <Container>
                 <EventForm onSubmit={onSubmitForm} initEvent={toEdit} />
             </Container>
         </Dialog>

@@ -144,7 +144,7 @@ export default function HomePage() {
                             key={event.uuid}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                <TableCell component="th" scope="row">
+                                <TableCell component="th" scope="row" sx={{ minWidth: 90 }}>
                                     <ShowDate dateDayjs={event.date} />
                                 </TableCell>
                                 <TableCell>{event.title}</TableCell>

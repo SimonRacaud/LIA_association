@@ -98,7 +98,7 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
                 )
             })}
             <Divider />
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 300 }}>
+            <FormControl variant="standard" sx={{ m: 1 }}>
                 <InputLabel id="new-team-select-label">Ajouter une équipe:</InputLabel>
                 <Select
                     labelId="new-team-select-label"
