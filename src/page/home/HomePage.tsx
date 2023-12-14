@@ -10,6 +10,7 @@ import EventEditDialog from './EventEditDialog';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CreateIcon from '@mui/icons-material/Add';
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 type HomeHeaderProps = {
     onClickSettings: () => void
@@ -36,6 +37,7 @@ export default function HomePage() {
     const [ openShowDialog, setOpenShowDialog ] = useState(false)
     const [ openEditDialog, setOpenEditDialog ] = useState(false)
     const [ selectedEvent, setSelecteEvent ] = useState(-1)
+    const navigate = useNavigate()
 
     const rows = [
         // TODO : debug entry
@@ -85,7 +87,7 @@ export default function HomePage() {
         setOpenEditDialog(true)
     }
     const onOpenSettings = () => {
-        // TODO: settings
+        navigate('/settings')
     }
 
     return (

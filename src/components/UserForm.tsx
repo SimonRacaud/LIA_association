@@ -1,6 +1,7 @@
 import { Card, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, TextField, Typography } from "@mui/material"
 import User, { UserType, userTypeOptions, userTypeToString } from "classes/User"
 import ShowDate from "./ShowDate"
+import { ChangeEvent } from "react"
 
 
 type UserFormProps = {
@@ -20,11 +21,25 @@ export default function UserForm({ user, setUser }: UserFormProps)
             setUser(user)
         }
     }
+    const onChangeUsername = (e: ChangeEvent<HTMLInputElement>) => {
+        if (user) {
+            user.username = e.target.value
+            setUser(user)
+        }
+    }
+    const onChangeUserEmail = (e: ChangeEvent<HTMLInputElement>) => {
+        if (user) {
+            user.email = e.target.value
+            setUser(user)
+        }
+    }
 
     return (
         <Card sx={{ p: 1 }}>
             <Stack spacing={2}>
-                <TextField label="Nom d'utilisateur" />
+                <TextField label="Nom d'utilisateur" defaultValue={user.username} onChange={onChangeUsername} />
+                <TextField label="E-mail" defaultValue={user.email} onChange={onChangeUserEmail} />
+
                 <FormControl variant="standard" sx={{ m: 1, minWidth: 300 }}>
                     <InputLabel id="user-type-label">Type</InputLabel>
                     <Select
@@ -51,7 +66,6 @@ export default function UserForm({ user, setUser }: UserFormProps)
                         <ShowDate date={user.created_at} showYear={true}/>
                     </Typography>
                 }
-                <TextField label="E-mail" />
             </Stack>
         </Card>
     )
