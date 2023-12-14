@@ -21,9 +21,9 @@ export default function UserTable({ userList, onEditUser, onRemoveUser }: UserTa
                         <TableCell>Date de création</TableCell>
                         <TableCell>E-mail</TableCell>
                         {onEditUser &&
-                            <TableCell>Editer</TableCell>
+                            <TableCell align='right'>Editer</TableCell>
                         }
-                        <TableCell>Supprimer</TableCell>
+                        <TableCell align='right'>Supprimer</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
