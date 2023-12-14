@@ -14,14 +14,15 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "context/UserContext";
 import { Item } from "components/EventTeamCardList";
 import AlertDialog from "components/AlertDialog";
+import LogoutIcon from '@mui/icons-material/Logout'
 
 type HomeHeaderProps = {
     onClickSettings: () => void
     onClickCreateEvent: () => void
+    onClickLogout: () => void
     user?: User
 }
-function HomeHeader({onClickSettings, onClickCreateEvent, user}: HomeHeaderProps) {
-
+function HomeHeader({ onClickSettings, onClickCreateEvent, onClickLogout, user }: HomeHeaderProps) {
     return (
         <Stack sx={{ 
             display: 'flex',
@@ -35,6 +36,9 @@ function HomeHeader({onClickSettings, onClickCreateEvent, user}: HomeHeaderProps
             <IconButton aria-label="create" size='large' onClick={onClickCreateEvent}>
                 <CreateIcon />
             </IconButton>
+            <IconButton aria-label="logout" size='large' onClick={onClickLogout} >
+                <LogoutIcon />
+            </IconButton>
             <Typography variant="caption" color='text.secondary' sx={{
                 mr: 1
             }}>{user?.username}</Typography>
@@ -46,12 +50,12 @@ function HomeHeader({onClickSettings, onClickCreateEvent, user}: HomeHeaderProps
 }
 
 export default function HomePage() {
+    const [ selectedEvent, setSelecteEvent ] = useState<Event | undefined>()
+    const [ openAlertDialog, setOpenAlertDialog ] = useState(false)
     const [ openShowDialog, setOpenShowDialog ] = useState(false)
     const [ openEditDialog, setOpenEditDialog ] = useState(false)
-    const [ openAlertDialog, setOpenAlertDialog ] = useState(false)
-    const [ selectedEvent, setSelecteEvent ] = useState<Event | undefined>()
+    const { user, logoutUser } = useUser()
     const navigate = useNavigate()
-    const { user } = useUser()
 
     const rows = [
         // TODO : debug entry
@@ -114,7 +118,7 @@ export default function HomePage() {
     return (
         <Container>
             <HomeHeader onClickSettings={onOpenSettings} 
-                onClickCreateEvent={onCreateEvent} user={user} />
+                onClickCreateEvent={onCreateEvent} user={user} onClickLogout={logoutUser} />
             <TableContainer component={Paper} >
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
