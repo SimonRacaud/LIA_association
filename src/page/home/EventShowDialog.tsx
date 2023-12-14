@@ -11,7 +11,7 @@ import { useState } from "react";
 
 export interface EventDialogProps {
     open: boolean
-    event: Event | undefined
+    event?: Event
     onClose: () => void
 }
 
@@ -62,14 +62,16 @@ export default function EventShowDialog({ open, event, onClose}: EventDialogProp
                     <CardIcon />
                 </IconButton>
             </Container>
-            {viewMode == ViewMode.CARDS &&
-                <EventTeamCardList event={event as Event} user={user as User} 
-                    onSubscribeTeam={onSubscribeEventTeam} 
-                    onUnsubscribeTeam={onUnsubscribeEventTeam} />
-                ||
-                <EventTeamTable event={event as Event} user={user as User} 
-                    onSubscribeTeam={onSubscribeEventTeam} 
-                    onUnsubscribeTeam={onUnsubscribeEventTeam} />
+            {event && 
+                (viewMode == ViewMode.CARDS &&
+                    <EventTeamCardList event={event} user={user as User} 
+                        onSubscribeTeam={onSubscribeEventTeam} 
+                        onUnsubscribeTeam={onUnsubscribeEventTeam} />
+                    ||
+                    <EventTeamTable event={event} user={user as User} 
+                        onSubscribeTeam={onSubscribeEventTeam} 
+                        onUnsubscribeTeam={onUnsubscribeEventTeam} />
+                )
             }
         </Dialog>
     )
