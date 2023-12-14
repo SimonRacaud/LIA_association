@@ -30,12 +30,16 @@ function HomeHeader({ onClickSettings, onClickCreateEvent, onClickLogout, user }
             alignItems: 'center',
             my: 1
          }}>
-            <IconButton aria-label="settings" size='large' onClick={onClickSettings}>
-                <SettingsIcon />
-            </IconButton>
-            <IconButton aria-label="create" size='large' onClick={onClickCreateEvent}>
-                <CreateIcon />
-            </IconButton>
+            {user?.role == UserType.ADMIN &&
+                <IconButton aria-label="settings" size='large' onClick={onClickSettings}>
+                    <SettingsIcon />
+                </IconButton>
+            }
+            {user?.role == UserType.ADMIN &&
+                <IconButton aria-label="create" size='large' onClick={onClickCreateEvent}>
+                    <CreateIcon />
+                </IconButton>
+            }
             <IconButton aria-label="logout" size='large' onClick={onClickLogout} >
                 <LogoutIcon />
             </IconButton>
@@ -120,14 +124,18 @@ export default function HomePage() {
             <HomeHeader onClickSettings={onOpenSettings} 
                 onClickCreateEvent={onCreateEvent} user={user} onClickLogout={logoutUser} />
             <TableContainer component={Paper} >
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <Table aria-label="simple table">
                     <TableHead>
                         <TableRow>
                             <TableCell>Date</TableCell>
                             <TableCell>Événement</TableCell>
                             <TableCell align="right">Montrer</TableCell>
-                            <TableCell align="right">Éditer</TableCell>
-                            <TableCell align="right">Supprimer</TableCell>
+                            {user?.role == UserType.ADMIN &&
+                                <TableCell align="right">Éditer</TableCell>
+                            }
+                            {user?.role == UserType.ADMIN &&
+                                <TableCell align="right">Supprimer</TableCell>
+                            }
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -146,14 +154,18 @@ export default function HomePage() {
                                     setOpenShowDialog(true)
                                     }}>Montrer</Button>
                                 </TableCell>
+                                {user?.role == UserType.ADMIN &&
                                 <TableCell align="right">
                                     <Button variant="outlined" onClick={onEditEvent(event)} 
                                         disabled={user?.role != UserType.ADMIN}>Éditer</Button>
                                 </TableCell>
+                                }
+                                {user?.role == UserType.ADMIN &&
                                 <TableCell align="right">
                                     <Button variant="outlined" onClick={onDeleteEvent(event.uuid)} 
                                         disabled={user?.role != UserType.ADMIN}>Supprimer</Button>
                                 </TableCell>
+                                }
                             </TableRow>
                         ))}
                     </TableBody>
