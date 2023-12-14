@@ -1,34 +1,46 @@
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, TextField } from "@mui/material";
-import TeamTemplate, { teamTypeOptions, teamTypeToString } from "classes/TeamTemplate";
+import TeamTemplate, { TeamType, teamTypeOptions, teamTypeToString } from "classes/TeamTemplate";
 import { ChangeEvent } from "react";
 
 type TeamTemplateFormProps = {
-    template: TeamTemplate
+    template?: TeamTemplate // undefined if we want to create a new one
     setTemplate: (t: TeamTemplate, update: boolean) => void
 }
 
 export default function TeamTemplateForm({template, setTemplate}: TeamTemplateFormProps)
 {
+    if (!template) {
+        template = new TeamTemplate("", "", TeamType.RAMASSAGE, "", 0)
+    }
+
     const handleChangeTemplateType = (event: SelectChangeEvent) => {
         const value = event.target.value
 
-        template.type = teamTypeOptions[Number(value)]
-        setTemplate(template, true)
+        if (template) {
+            template.type = teamTypeOptions[Number(value)]
+            setTemplate(template, true)
+        }
     }
     const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        template.title = e.target.value
-        setTemplate(template, false)
+        if (template) {
+            template.title = e.target.value
+            setTemplate(template, false)
+        }
     }
     const handleMemoChange = (e: ChangeEvent<HTMLInputElement>) => {
-        template.note = e.target.value
-        setTemplate(template, false)
+        if (template) {
+            template.note = e.target.value
+            setTemplate(template, false)
+        }
     }
     const handleMaxMemberChange = (e: ChangeEvent<HTMLInputElement>) => {
-        template.maxMember = Number(e.target.value)
-        if (template.maxMember == 0)
-            template.maxMember = 1 // Minimum is 1
-        e.target.value = template.maxMember.toString()
-        setTemplate(template, true)
+        if (template) {
+            template.maxMember = Number(e.target.value)
+            if (template.maxMember == 0)
+                template.maxMember = 0 // Minimum is 0
+            e.target.value = template.maxMember.toString()
+            setTemplate(template, true)
+        }
     }
 
     return (

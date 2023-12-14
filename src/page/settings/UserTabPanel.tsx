@@ -23,7 +23,7 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
 
     const onUserEdit = (uuid: string) => {
         // Open user edit dialog
-        setSelectedUser(getUserFromUuid(uuid))
+        setSelectedUser(_getUserFromUuid(uuid))
         setShowEditDialog(true)
     }
     const onUserEditSubmit = () => {
@@ -34,7 +34,7 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
         setShowEditDialog(false)
     }
     const onUserRemove = (uuid: string) => {
-        setSelectedUser(getUserFromUuid(uuid))
+        setSelectedUser(_getUserFromUuid(uuid))
         setShowAlertDialog(true)
     }
     const applyUserRemoval = () => {
@@ -45,7 +45,7 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
         // Open user create form dialog
         navigate('/signup')
     }
-    const getUserFromUuid = (uuid: string) => {
+    const _getUserFromUuid = (uuid: string) => {
         return userList.find((user: User) => user.id == uuid)
     }
 

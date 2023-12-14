@@ -3,6 +3,7 @@ import { useState } from "react";
 import UserTabPanel from "./UserTabPanel";
 import BackIcon from '@mui/icons-material/Home'
 import { useNavigate } from "react-router-dom";
+import TemplateTabPanel from "./TemplateTabPanel";
 
 function a11yProps(index: number) {
     return {
@@ -65,9 +66,7 @@ export default function Settings()
                 <Tab label="Modèles d'équipe" {...a11yProps(1)} />
             </Tabs>
             <UserTabPanel tabIndex={tabIndex} />
-            <CustomTabPanel value={tabIndex} index={1}>
-                Template CRUD
-            </CustomTabPanel>
+            <TemplateTabPanel tabIndex={tabIndex} />
         </Container>
     )
 }
