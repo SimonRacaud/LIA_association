@@ -78,7 +78,7 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
             <TextField id="title" label="Titre" variant="standard" defaultValue={event.title} onChange={(e) => {
                 event.title = e.target.value
             }} />
-            <DatePicker value={event.date} disablePast />
+            <DatePicker value={event.date} disablePast format="DD/MM/YYYY" />
 
             <Divider />
             
