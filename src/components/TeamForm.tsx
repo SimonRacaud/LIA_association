@@ -23,7 +23,7 @@ export default function TeamForm({ team, setTeam }: TeamFormProps)
     return (
         <Stack spacing={2}>
             {/* Template */}
-            <TeamTemplateForm template={team.template} setTemplate={updateTeamTemplate} />
+            <TeamTemplateForm template={team.template} setTemplate={updateTeamTemplate} lock={true} />
             {/* Members */}
             {team.members.length > 0 &&
             <Card sx={{ m: 1, p: 1 }}>

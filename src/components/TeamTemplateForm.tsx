@@ -5,9 +5,10 @@ import { ChangeEvent } from "react";
 type TeamTemplateFormProps = {
     template?: TeamTemplate // undefined if we want to create a new one
     setTemplate: (t: TeamTemplate, update: boolean) => void
+    lock?: boolean
 }
 
-export default function TeamTemplateForm({template, setTemplate}: TeamTemplateFormProps)
+export default function TeamTemplateForm({template, setTemplate, lock}: TeamTemplateFormProps)
 {
     if (!template) {
         template = new TeamTemplate("", "", TeamType.RAMASSAGE, "", 0)
@@ -46,7 +47,7 @@ export default function TeamTemplateForm({template, setTemplate}: TeamTemplateFo
     return (
         <Stack spacing={2}>
             <TextField label="Titre" variant="standard" defaultValue={template.title} 
-                onChange={handleTitleChange} type='text' InputLabelProps={{ shrink: true }} />
+                onChange={handleTitleChange} type='text' InputLabelProps={{ shrink: true }} disabled={lock} />
             <FormControl variant="standard" sx={{ m: 1, minWidth: 300 }}>
                 <InputLabel id="team-type-label">Type</InputLabel>
                 <Select
@@ -54,6 +55,7 @@ export default function TeamTemplateForm({template, setTemplate}: TeamTemplateFo
                     id="team-type-select"
                     value={template.type.toString()}
                     onChange={handleChangeTemplateType}
+                    disabled={lock}
                 >
                     {teamTypeOptions.map((option) => {
                         return (                   
@@ -63,10 +65,12 @@ export default function TeamTemplateForm({template, setTemplate}: TeamTemplateFo
                 </Select>
             </FormControl>
             <TextField label="Memo" variant="standard" defaultValue={template.note} 
-                onChange={handleMemoChange} InputLabelProps={{ shrink: true }} />
+                onChange={handleMemoChange} InputLabelProps={{ shrink: true }}
+                disabled={lock} />
             <TextField label="Nombre de personnes" variant="standard" 
                 value={template.maxMember} type="number"
-                onChange={handleMaxMemberChange} />
+                onChange={handleMaxMemberChange}
+                disabled={lock} />
         </Stack>
     )
 }
