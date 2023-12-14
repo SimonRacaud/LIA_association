@@ -8,7 +8,7 @@ import '@fontsource/roboto/700.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute } from './router/ProtectedRoute';
 import UserProvider from './context/UserContext'
-import { routes } from 'router/Routes';
+import { Route as RouteModel, routes } from 'router/Routes';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
@@ -18,10 +18,10 @@ function App() {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Router>
           <Routes>
-            {routes.map((route) => {
+            {routes.map((route: RouteModel) => {
                 let element = route.element
                 if (route.protected) {
-                  element = (<ProtectedRoute key={route.path}>{element}</ProtectedRoute>)
+                  element = (<ProtectedRoute key={route.path} role={route.role}>{element}</ProtectedRoute>)
                 }
                 return (<Route key={route.path} path={route.path} element={element} />)
             })}

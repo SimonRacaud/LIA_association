@@ -1,14 +1,16 @@
+import { UserType } from 'classes/User'
 import { useUser } from 'context/UserContext'
 import { useEffect, useState } from 'react'
 
 import { Navigate } from 'react-router-dom'
 
 type ProtectedRouteProps = {
-  children: JSX.Element
+  children: JSX.Element,
+  role?: UserType
 }
 
-export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { verifyAuth } = useUser()
+export const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
+  const { verifyAuth, user } = useUser()
   const [isLogged, setIsLogged] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -22,7 +24,8 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     checkAuth()
   }, [isLoading])
 
-  if (!isLogged && !isLoading) {
+  if ((!isLogged && !isLoading) 
+    || (role == UserType.ADMIN && user?.role != UserType.ADMIN)) {
     return <Navigate to="/login" replace />
   }
 
