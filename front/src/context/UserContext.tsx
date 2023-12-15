@@ -1,8 +1,9 @@
 import React, { createContext, useState } from 'react'
-import User from 'classes/User'
+import User, { UserType } from 'classes/User'
 import { AuthService } from 'services/authService'
+import { AxiosError } from 'axios'
 
-type UserContextType = {
+export type UserContextType = {
   user?: User
   isLogged: boolean
   setUser: (user: User) => void
@@ -30,6 +31,9 @@ const UserProvider = ({ children }: UserProviderProps) => {
     AuthService.logoutUser().then(() => {
       setUser(undefined)
       setIsLogged(false)
+    }).catch((err: AxiosError) => {
+        console.error("Network error: " + err.message)
+        alert("Erreur: êtes-vous bien connecté à internet ?")
     })
   }
 
@@ -45,14 +49,18 @@ const UserProvider = ({ children }: UserProviderProps) => {
   }
 
   const verifyAuth = async (): Promise<boolean> => {
+    setUser(new User("4242", "admin", UserType.ADMIN, new Date(), "admin@admin.fr"))
+    setIsLogged(true)
+    return true // TODO : debug
+
     if (isLogged) {
       return true
     }
 
     const user = await AuthService.getAuthentifiedUser()
-    if (user) {
+    if (user != null) {
       setIsLogged(true)
-      setUser(user)
+      // setUser(user)
       return true
     }
 
