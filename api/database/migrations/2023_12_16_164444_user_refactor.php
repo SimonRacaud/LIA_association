@@ -16,6 +16,9 @@ return new class extends Migration
             $table->unique('username');
 
             $table->enum('role', ['ADMIN', 'MEMBRE']);
+
+            $table->removeColumn('email_verified_at');
+            $table->removeColumn('remember_token');
         });
     }
 
