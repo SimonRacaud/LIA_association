@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\API\RegisterController;
+use App\Http\Controllers\API\UsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,4 +30,8 @@ Route::controller(RegisterController::class)->group(function(){
 
 Route::middleware('auth:sanctum')->group( function () {
 
+    Route::get('users', [UsersController::class, 'index']);
+    Route::get('users/{user}', [UsersController::class, 'show']);
+    Route::put('users/{user}', [UsersController::class, 'update']);
+    Route::delete('users/{user}', [UsersController::class, 'destroy']);
 });

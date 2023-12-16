@@ -42,4 +42,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public static array $validation = [
+        'name' => 'required|unique:users|max:255',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|min:8',
+    ];
 }
