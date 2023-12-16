@@ -49,9 +49,10 @@ class UsersController extends BaseController
         try {
             $user = $this->repository->findOrFail($id);
             $data = $request->validate([
-                'name' => 'unique:users|max:255',
+                'username' => 'unique:users|max:255',
                 'email' => 'email|unique:users',
                 'password' => 'min:8',
+                'role' => 'in:ADMIN,MEMBRE'
             ]);
 
             if (array_key_exists('password', $data)) {

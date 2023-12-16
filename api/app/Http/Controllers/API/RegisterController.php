@@ -32,7 +32,7 @@ class RegisterController extends BaseController
             $input['password'] = bcrypt($input['password']);
             $user = User::create($input);
             $success['token'] =  $user->createToken(self::APP_NAME)->plainTextToken;
-            $success['name'] =  $user->name;
+            $success['username'] =  $user->username;
 
             return $this->sendResponse($success);
         } catch (ValidationException $exception) {
@@ -47,10 +47,10 @@ class RegisterController extends BaseController
      */
     public function login(Request $request): JsonResponse
     {
-        if(Auth::attempt(['name' => $request->name, 'password' => $request->password])){
+        if(Auth::attempt(['username' => $request->username, 'password' => $request->password])){
             $user = Auth::user();
             $success['token'] =  $user->createToken(self::APP_NAME)->plainTextToken;
-            $success['name'] =  $user->name;
+            $success['username'] =  $user->username;
 
             return $this->sendResponse($success);
         }

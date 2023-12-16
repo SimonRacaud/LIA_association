@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+
+enum UserRole:string
+{
+    case MEMBER = 'MEMBRE';
+    case ADMIN = 'ADMIN';
+}
 
 class User extends Authenticatable
 {
@@ -18,9 +23,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'username',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -39,13 +45,14 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'role' => UserRole::class
     ];
 
     public static array $validation = [
-        'name' => 'required|unique:users|max:255',
-        'email' => 'required|email|unique:users',
-        'password' => 'required|min:8',
+        'username' => ['required', 'unique:users', 'max:255'],
+        'email' => ['required', 'email', 'unique:users'],
+        'password' => ['required', 'min:8'],
+        'role' => ['required', 'in:ADMIN,MEMBRE']
     ];
 }
