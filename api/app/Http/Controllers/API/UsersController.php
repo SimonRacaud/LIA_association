@@ -12,18 +12,15 @@ use Illuminate\Validation\ValidationException;
 
 class UsersController extends BaseController
 {
-    public function __construct(
-        protected User $repository,
-    ) {
-
-    }
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $list = User::all();
+        $size = $request->query('size');
+
+        $list = User::paginate($size == null ? 10 : $size);
         return $this->sendResponse(UserResource::collection($list));
     }
 
@@ -47,7 +44,7 @@ class UsersController extends BaseController
     public function update(Request $request, string $id)
     {
         try {
-            $user = $this->repository->findOrFail($id);
+            $user = User::findOrFail($id);
             $data = $request->validate([
                 'username' => 'unique:users|max:255',
                 'email' => 'email|unique:users',
