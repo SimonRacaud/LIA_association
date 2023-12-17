@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\API\RegisterController;
 use App\Http\Controllers\API\UsersController;
+use App\Http\Controllers\API\TeamTemplateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,9 +32,17 @@ Route::controller(RegisterController::class)->group(function(){
 Route::middleware('auth:sanctum')->group( function () {
     Route::get('users', [UsersController::class, 'index']);
     Route::get('users/{user}', [UsersController::class, 'show']);
+
+    Route::get('team/template', [TeamTemplateController::class, 'index']);
+    Route::get('team/template/{uuid}', [TeamTemplateController::class, 'show']);
+
     Route::middleware('admin')->group( function () {
         // Admin access only
         Route::put('users/{user}', [UsersController::class, 'update']);
         Route::delete('users/{user}', [UsersController::class, 'destroy']);
+
+        Route::post('team/template', [TeamTemplateController::class, 'store']);
+        Route::put('team/template/{uuid}', [TeamTemplateController::class, 'update']);
+        Route::delete('team/template/{uuid}', [TeamTemplateController::class, 'destroy']);
     });
 });

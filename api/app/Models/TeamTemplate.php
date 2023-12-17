@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 enum TeamType:string
 {
@@ -66,18 +67,24 @@ class TeamTemplate extends Model
         'type' => TeamType::class
     ];
 
-    public static array $validation = [
-        'title' => 'required|max:255|unique:team_templates',
-        'type' => 'required|in:RAMASSAGE,DISTRIB',
-        'note' => 'required|max:255',
-        'maxMember' => 'required|numeric'
-    ];
-    public static array $validationSoft = [
-        'title' => 'max:255|unique:team_templates',
-        'type' => 'in:RAMASSAGE,DISTRIB',
-        'note' => 'max:255',
-        'maxMember' => 'numeric'
-    ];
+    public static function validation(): array
+    {
+        return [
+            'title' => 'required|max:255|unique:team_templates',
+            'type' => ['required', Rule::in(array_column(TeamType::cases(), 'value'))],
+            'note' => 'max:255',
+            'maxMember' => 'required|numeric'
+        ];
+    }
+    public static function validationUpdate(string $uuid): array
+    {
+        return [
+            'title' => ['max:255', Rule::unique('team_templates')->ignore($uuid, 'uuid')],
+            'type' => [Rule::in(array_column(TeamType::cases(), 'value'))],
+            'note' => 'max:255',
+            'maxMember' => 'numeric'
+        ];
+    }
     public static function booted(): void
     {
         static::creating(function ($model) {
