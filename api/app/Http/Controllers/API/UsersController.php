@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController;
 use App\Http\Resources\UserResource;
@@ -12,16 +12,24 @@ use Illuminate\Validation\ValidationException;
 
 class UsersController extends BaseController
 {
-
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $size = $request->query('size');
+        try {
+            $size = $request->query('size');
+            $list = User::paginate($size == null ? 10 : $size);
 
-        $list = User::paginate($size == null ? 10 : $size);
-        return $this->sendResponse(UserResource::collection($list));
+            return $this->sendCollection(
+                UserResource::collection($list),
+                intval($request->query('page')),
+                $size,
+                User::count(),
+            );
+        } catch (\Exception $exception) {
+            return $this->sendError("Failure", [$exception->getMessage()], 500);
+        }
     }
 
     /**
@@ -29,13 +37,17 @@ class UsersController extends BaseController
      */
     public function show(string $id)
     {
-        $user = User::find($id);
+        try {
+            $user = User::find($id);
 
-        if (is_null($user)) {
-            return $this->sendError('User not found');
+            if (is_null($user)) {
+                return $this->sendError('User not found');
+            }
+
+            return $this->sendResponse(new UserResource($user));
+        } catch (\Exception $exception) {
+            return $this->sendError("Failure", [$exception->getMessage()], 500);
         }
-
-        return $this->sendResponse(new UserResource($user));
     }
 
     /**
@@ -59,7 +71,11 @@ class UsersController extends BaseController
 
             return $this->sendResponse(new UserResource($user));
         } catch (ValidationException $exception) {
-            return $this->sendError('Validation Error.', $exception->errors());
+            return $this->sendError('Validation Error.', $exception->errors(), 400);
+        } catch (ModelNotFoundException $exception) {
+            return $this->sendError("Not found", [], 404);
+        } catch (\Exception $exception) {
+            return $this->sendError("Failure", [$exception->getMessage()], 500);
         }
     }
 
@@ -68,8 +84,14 @@ class UsersController extends BaseController
      */
     public function destroy(string $id)
     {
-        User::findOrFail($id)->delete();
+        try {
+            User::findOrFail($id)->delete();
 
-        return response()->json(null, 204);
+            return response()->json(null, 204);
+        } catch (ModelNotFoundException $exception) {
+            return $this->sendError("Not found", [], 404);
+        } catch (\Exception $exception) {
+            return $this->sendError("Failure", [$exception->getMessage()], 500);
+        }
     }
 }
