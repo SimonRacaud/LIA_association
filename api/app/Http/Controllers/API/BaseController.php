@@ -33,7 +33,7 @@ class BaseController extends Controller
         return $this->sendResponse([
             'data' => $data,
             'page' => ($page == 0) ? 1 : $page,
-            'max' => $maxPage,
+            'max' => ($maxPage == 0) ? 1 : $maxPage,
         ]);
     }
 
