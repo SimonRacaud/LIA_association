@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller as Controller;
+use Illuminate\Http\JsonResponse;
 
 class BaseController extends Controller
 {
     /**
      * success response method.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function sendResponse($result)
+    public function sendResponse($result): JsonResponse
     {
         return response()->json($result, 200);
     }
@@ -21,9 +22,9 @@ class BaseController extends Controller
      * @param $data
      * @param $page
      * @param $size
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function sendCollection($data, $page, $size, $count)
+    public function sendCollection($data, $page, $size, $count): JsonResponse
     {
         $maxPage = 0;
         if ($size > 0) { // Prevent div by 0
@@ -40,9 +41,9 @@ class BaseController extends Controller
     /**
      * return error response.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function sendError($error, $errorMessages = [], $code = 404)
+    public function sendError($error, $errorMessages = [], $code = 404): JsonResponse
     {
     	$response = [
             'message' => $error,

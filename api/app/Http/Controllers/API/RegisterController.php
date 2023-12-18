@@ -21,7 +21,7 @@ class RegisterController extends BaseController
     /**
      * Register api
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function register(Request $request): JsonResponse
     {
@@ -43,20 +43,30 @@ class RegisterController extends BaseController
     /**
      * Login api
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function login(Request $request): JsonResponse
     {
-        if(Auth::attempt(['username' => $request->username, 'password' => $request->password])){
+        if (Auth::attempt(['username' => $request->username, 'password' => $request->password])){
             $user = Auth::user();
             $success['token'] =  $user->createToken(self::APP_NAME)->plainTextToken;
             $success['username'] =  $user->username;
             $success['role'] =  $user->role;
 
             return $this->sendResponse($success);
-        }
-        else{
+        } else{
             return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
         }
+    }
+
+    /**
+     * Logout api
+     * @return JsonResponse
+     */
+    public function logout(Request $request): JsonResponse
+    {
+        $request->user('sanctum')->tokens()->delete();
+
+        return $this->sendResponse(['message' => 'success']);
     }
 }
