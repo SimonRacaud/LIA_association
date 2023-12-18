@@ -3,8 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -52,7 +50,7 @@ export default function SignIn() {
         };
         if (!loginData.password || !loginData.username) {
             setError(true)
-            setErrorMessage("Le nom d'utilisateur et le mot de passe sont requis")
+            setErrorMessage("Nom d'utilisateur ou mot de passe incorrect")
             return // Abort
         }
         AuthService.loginUser(loginData.username, loginData.password)
@@ -88,11 +86,10 @@ export default function SignIn() {
             }}
         >
             <Avatar sx={{ m: 2, bgcolor: 'secondary.main', width: 100, height: 100 }}>
-                {/* <LockOutlinedIcon /> */}
                 <LiaLogo />
             </Avatar>
             <Typography component="h1" variant="h5">
-            Sign in
+                Planification des équipes
             </Typography>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
@@ -100,7 +97,7 @@ export default function SignIn() {
                 required
                 fullWidth
                 id="username"
-                label="Username"
+                label="Nom d'utilisateur"
                 name="username"
                 autoComplete="username"
                 autoFocus
@@ -110,7 +107,7 @@ export default function SignIn() {
                 required
                 fullWidth
                 name="password"
-                label="Password"
+                label="Mot de passe"
                 type="password"
                 id="password"
                 autoComplete="current-password"
@@ -126,12 +123,12 @@ export default function SignIn() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
             >
-                Sign In
+                Connexion
             </Button>
             <Grid container>
                 <Grid item xs>
                 <Link href="mailto:simonracaud@gmail.com" variant="body2">
-                    Forgot password?
+                    Mot de passe oublié ?
                 </Link>
                 </Grid>
                 {/* <Grid item>
