@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\RegisterController;
 use App\Http\Controllers\API\UsersController;
 use App\Http\Controllers\API\TeamTemplateController;
+use App\Http\Controllers\API\TeamController;
+use App\Http\Controllers\API\EventController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,5 +46,9 @@ Route::middleware('auth:sanctum')->group( function () {
         Route::post('team/template', [TeamTemplateController::class, 'store']);
         Route::put('team/template/{uuid}', [TeamTemplateController::class, 'update']);
         Route::delete('team/template/{uuid}', [TeamTemplateController::class, 'destroy']);
+
+        Route::post('team', [TeamController::class, 'store']);
+        Route::put('team/{uuid}', [TeamController::class, 'update']);
+        Route::delete('team/{uuid}', [TeamController::class, 'destroy']);
     });
 });

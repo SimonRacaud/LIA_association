@@ -41,19 +41,24 @@ class Event extends Model
 
     protected $fillable = [
         'title',
-        'date',
-        'teams'
+        'date'
+    ];
+
+    protected $casts = [
+        'date' => 'datetime:d/m/Y',
     ];
 
     public static array $validation = [
         'title' => 'required|max:255',
-        'date' => 'required|date_format:d/M/Y',
-        'teams' => 'required|array|exists:App\Models\Team,uuid',
+        'date' => 'required|date_format:d/m/Y',
+        'teams' => 'array',
+        "teams.*"  => "exists:App\Models\Team,uuid",
     ];
-    public static array $validationSoft = [
+    public static array $validationUpdate = [
         'title' => 'max:255',
-        'date' => 'date_format:d/M/Y',
-        'teams' => 'array|exists:App\Models\Team,uuid',
+        'date' => 'date_format:d/m/Y',
+        'teams' => 'array',
+        "teams.*"  => "exists:App\Models\Team,uuid",
     ];
 
     public static function booted(): void
@@ -68,6 +73,6 @@ class Event extends Model
      */
     public function teams(): HasMany
     {
-        return $this->hasMany(Team::class);
+        return $this->hasMany(Team::class, 'event_uuid');
     }
 }
