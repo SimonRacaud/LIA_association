@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TeamResource extends JsonResource
+class EventResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,8 +16,9 @@ class TeamResource extends JsonResource
     {
         return [
             'uuid' => $this->uuid,
-            'template' => new TeamTemplateResource($this->template),
-            'members' => UserResource::collection($this->members)
+            'title' => $this->title,
+            'date' => $this->date->format('d-m-Y'),
+            'teams' => TeamResource::collection($this->teams)
         ];
     }
 }

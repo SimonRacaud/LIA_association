@@ -38,6 +38,9 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::get('team/template', [TeamTemplateController::class, 'index']);
     Route::get('team/template/{uuid}', [TeamTemplateController::class, 'show']);
 
+    Route::get('event', [EventController::class, 'index']);
+    Route::get('event/{uuid}', [EventController::class, 'show']);
+
     Route::middleware('admin')->group( function () {
         // Admin access only
         Route::put('users/{user}', [UsersController::class, 'update']);
@@ -50,5 +53,9 @@ Route::middleware('auth:sanctum')->group( function () {
         Route::post('team', [TeamController::class, 'store']);
         Route::put('team/{uuid}', [TeamController::class, 'update']);
         Route::delete('team/{uuid}', [TeamController::class, 'destroy']);
+
+        Route::post('event', [EventController::class, 'store']);
+        Route::put('event/{uuid}', [EventController::class, 'update']);
+        Route::delete('event/{uuid}', [EventController::class, 'destroy']);
     });
 });
