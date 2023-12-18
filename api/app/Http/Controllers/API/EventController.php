@@ -20,6 +20,7 @@ class EventController extends BaseController
             $size = $request->query('size');
 
             $list = Event::paginate($size == null ? 10 : $size);
+            $list = $list->sortByDesc('date');
             return $this->sendCollection(
                 EventResource::collection($list),
                 intval($request->query('page')),
