@@ -13,30 +13,28 @@ import LiaLogo from '../../components/LiaLogo';
 
 import { useUser } from 'context/UserContext';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { AuthService } from 'services/authService';
 import { Alert } from '@mui/material';
+import User from 'classes/User';
 
 
 export default function SignIn() {
-    const {setUser, verifyAuth } = useUser()
+    const {setUser, loginUser, isLogged } = useUser()
     const navigate = useNavigate()
-    const [isLogged, setIsLogged] = useState(false)
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoginSuccess, setIsLoginSuccess] = useState(false)
     const [error, setError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
 
     const checkAuth = async () => {
-        const isAuth = await verifyAuth()
-        setIsLoading(false)
-        setIsLogged(isAuth)
-        console.log('Login isAuth', isAuth)
+        const isAuth = isLogged();
+
+        setIsLoginSuccess(isAuth)
       }
     
       useEffect(() => {
         checkAuth()
       })
     
-      if (!isLoading && isLogged) {
+      if (isLoginSuccess) {
         return <Navigate to="/" replace={true} />
       }
 
@@ -53,18 +51,17 @@ export default function SignIn() {
             setErrorMessage("Nom d'utilisateur ou mot de passe incorrect")
             return // Abort
         }
-        AuthService.loginUser(loginData.username, loginData.password)
-        .then(() => {
-            AuthService.getAuthentifiedUser().then((user) => {
-            if (!user) {
-                throw new Error('Une erreur est survenue')
+        loginUser(loginData.username, loginData.password)
+        .then((user: User | null) => {
+            if (user) {
+                navigate('/')
+            } else {
+                setError(true)
+                setErrorMessage('Fatal: Une erreur est survenue')
             }
-            setUser(user)
-            })
-            navigate('/')
         })
         .catch((error) => {
-            if (error.response != null && error.response.status === 400) {
+            if (error.response != null && error.response.status === 401) {
                 setError(true)
                 setErrorMessage("Nom d'utilisateur ou mot de passe incorrect")
             } else {

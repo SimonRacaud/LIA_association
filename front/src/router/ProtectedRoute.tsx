@@ -10,13 +10,13 @@ type ProtectedRouteProps = {
 }
 
 export const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
-  const { verifyAuth, user } = useUser()
-  const [isLogged, setIsLogged] = useState(false)
+  const { isLogged, user } = useUser()
+  const [isUserLogged, setIsUserLogged] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
   const checkAuth = async () => {
-    const isAuth = await verifyAuth()
-    setIsLogged(isAuth)
+    const isAuth = isLogged()
+    setIsUserLogged(isAuth)
     setIsLoading(false)
   }
 
@@ -24,9 +24,9 @@ export const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
     checkAuth()
   }, [isLoading])
 
-  if ((!isLogged && !isLoading) 
+  if ((!isUserLogged && !isLoading) 
     || (role == UserType.ADMIN && user?.role != UserType.ADMIN)) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/" replace />
   }
 
   return children

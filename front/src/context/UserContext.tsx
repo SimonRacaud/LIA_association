@@ -1,15 +1,17 @@
 import React, { createContext, useState } from 'react'
-import User, { UserType } from 'classes/User'
+import User from 'classes/User'
 import { AuthService } from 'services/authService'
 import { AxiosError } from 'axios'
+import LoginReponse from 'models/LoginResponse'
 
 export type UserContextType = {
   user?: User
-  isLogged: boolean
+  token?: string // Auth token
   setUser: (user: User) => void
+  setToken: (token: string) => void
   logoutUser: () => void
-  verifyAuth: () => Promise<boolean>
-  refreshUser: () => Promise<void>
+  loginUser: (username: string, password: string) => Promise<User | null>
+  isLogged: () => boolean
 }
 
 const UserContext = createContext({} as UserContextType)
@@ -20,62 +22,64 @@ type UserProviderProps = {
 
 const UserProvider = ({ children }: UserProviderProps) => {
   const [user, setUser] = useState<User>()
-  const [isLogged, setIsLogged] = useState(false)
+  const [token, setToken] = useState<string>()
 
   const setUserCtx = (user: User) => {
     setUser(user)
-    setIsLogged(true)
+  }
+  const setTokenCtx = (token: string) => {
+    setToken(token)
+  }
+  const isLogged = () => {
+    return user != undefined && token != undefined
   }
 
+  /**
+   * User login
+   * @param username 
+   * @param password 
+   * @returns Promise<User | null>
+   */
+  const loginUser = async (username: string, password: string): Promise<User | null> => {
+    const response: LoginReponse = await AuthService.loginUser(username, password);
+
+    setToken(response.token)
+    console.info("Auth: token received");
+    const user = await AuthService.getAuthentifiedUser(response.token);
+    if (user) {
+        console.info("Logged successfully:", user.username, user.email, user.role)
+        setUser(user)
+    }
+    return user
+  }
+
+  /**
+   * User logout
+   */
   const logoutUser = () => {
-    AuthService.logoutUser().then(() => {
+    if (!token) {
+      throw new AxiosError("Vous n'êtes pas connecté", "401");
+    }
+
+    AuthService.logoutUser(token).then(() => {
       setUser(undefined)
-      setIsLogged(false)
+      setToken(undefined)
     }).catch((err: AxiosError) => {
         console.error("Network error: " + err.message)
         alert("Erreur: êtes-vous bien connecté à internet ?")
     })
   }
 
-  const refreshUser = async () => {
-    const user = await AuthService.getAuthentifiedUser()
-    if (user) {
-      setUser(user)
-      setIsLogged(true)
-    } else {
-      setUser(undefined)
-      setIsLogged(false)
-    }
-  }
-
-  const verifyAuth = async (): Promise<boolean> => {
-    setUser(new User("4242", "admin", UserType.ADMIN, new Date(), "admin@admin.fr"))
-    setIsLogged(true)
-    return true // TODO : debug
-
-    if (isLogged) {
-      return true
-    }
-
-    const user = await AuthService.getAuthentifiedUser()
-    if (user != null) {
-      setIsLogged(true)
-      // setUser(user)
-      return true
-    }
-
-    return false
-  }
-
   return (
     <UserContext.Provider
       value={{
         user,
-        isLogged,
+        token,
         setUser: setUserCtx,
+        setToken: setTokenCtx,
         logoutUser,
-        verifyAuth,
-        refreshUser,
+        loginUser,
+        isLogged,
       }}
     >
       {children}
