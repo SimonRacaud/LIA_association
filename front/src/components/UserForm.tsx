@@ -17,7 +17,7 @@ export default function UserForm({ user, setUser }: UserFormProps)
 
     const handleChangeUserType = (event: SelectChangeEvent) => {
         if (user) {
-            user.role = userTypeOptions[Number(event.target.value)] ?? UserType.MEMBRE
+            user.role = event.target.value as UserType
             setUser(user)
         }
     }
@@ -33,13 +33,18 @@ export default function UserForm({ user, setUser }: UserFormProps)
             setUser(user)
         }
     }
-
+    const onChangeUserPassword = (e: ChangeEvent<HTMLInputElement>) => {
+        if (user) {
+            user.password = e.target.value
+            setUser(user)
+        }
+    }
     return (
         <Card sx={{ p: 1 }}>
             <Stack spacing={2}>
                 <TextField label="Nom d'utilisateur" defaultValue={user.username} onChange={onChangeUsername} />
                 <TextField label="E-mail" defaultValue={user.email} onChange={onChangeUserEmail} />
-
+                <TextField label="Mot de passe" placeholder="Nouveau mot de passe" defaultValue={user.password} onChange={onChangeUserPassword} />
                 <FormControl variant="standard" sx={{ m: 1, minWidth: 300 }}>
                     <InputLabel id="user-type-label">Type</InputLabel>
                     <Select

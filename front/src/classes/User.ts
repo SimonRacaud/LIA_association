@@ -14,18 +14,21 @@ export default class User {
   role: UserType
   created_at: Date
   email: string
+  password?: string
 
   constructor(
     id: string,
     username: string,
     role: UserType,
     created_at: Date,
-    email: string
+    email: string,
+    password?: string,
   ) {
     this.id = id
     this.username = username
     this.role = role
     this.created_at = created_at
     this.email = email
+    this.password = password
   }
 }
