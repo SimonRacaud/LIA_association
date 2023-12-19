@@ -39,7 +39,6 @@ export class AuthService {
    * @param email 
    */
   public static async registerUser(
-    token: string,
     username: string,
     password: string,
     role: UserType,
@@ -47,7 +46,6 @@ export class AuthService {
   ): Promise<void> {
     const reqConfig: AxiosRequestConfig<{}> = {
       headers : {
-        "Authorization" : "Bearer " + token,
         "Content-Type" : "application/json"
       },
       withCredentials: true,
@@ -67,11 +65,8 @@ export class AuthService {
   /**
    * Invalidate current auth token
    */
-  public static async logoutUser(token: string): Promise<void> {
+  public static async logoutUser(): Promise<void> {
     const reqConfig: AxiosRequestConfig<{}> = {
-      headers : {
-        "Authorization" : "Bearer " + token,
-      },
       withCredentials: true,
     }
 
@@ -82,10 +77,9 @@ export class AuthService {
    * @param token 
    * @returns 
    */
-  public static async getAuthentifiedUser(token: string): Promise<User | null> {
+  public static async getAuthentifiedUser(): Promise<User | null> {
     const reqConfig: AxiosRequestConfig<{}> = {
       headers : {
-        "Authorization" : "Bearer " + token,
         "Content-Type" : "application/json"
       },
       withCredentials: true,

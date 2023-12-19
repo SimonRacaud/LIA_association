@@ -6,9 +6,7 @@ import LoginReponse from 'models/LoginResponse'
 
 export type UserContextType = {
   user?: User
-  token?: string // Auth token
   setUser: (user: User) => void
-  setToken: (token: string) => void
   logoutUser: () => void
   loginUser: (username: string, password: string) => Promise<boolean>
   isLogged: () => Promise<boolean>
@@ -22,18 +20,17 @@ type UserProviderProps = {
 
 const UserProvider = ({ children }: UserProviderProps) => {
   const [user, setUser] = useState<User>()
-  const [token, setToken] = useState<string>()
 
   const setUserCtx = (user: User) => {
+    user.role = UserType[user.role] as unknown as UserType
     setUser(user)
   }
-  const setTokenCtx = (token: string) => {
-    setToken(token)
-  }
   const isLogged = async () => {
-    if (!token || !user)
-      return false
-    return (await AuthService.getAuthentifiedUser(token)) != null
+    const user = await AuthService.getAuthentifiedUser();
+    if (user) {
+      setUserCtx(user)
+    }
+    return user != null
   }
 
   /**
@@ -45,12 +42,9 @@ const UserProvider = ({ children }: UserProviderProps) => {
   const loginUser = async (username: string, password: string): Promise<boolean> => {
     const response: LoginReponse = await AuthService.loginUser(username, password);
 
-    setToken(response.token)
-    console.info("Auth: token received");
-    const user = await AuthService.getAuthentifiedUser(response.token);
+    const user = await AuthService.getAuthentifiedUser();
     if (user) {
         console.info("Logged successfully:", user.username, user.email, user.role)
-        user.role = UserType[user.role] as unknown as UserType
         setUser(user)
     }
     return user != null
@@ -60,13 +54,8 @@ const UserProvider = ({ children }: UserProviderProps) => {
    * User logout
    */
   const logoutUser = () => {
-    if (!token) {
-      throw new AxiosError("Vous n'êtes pas connecté", "401");
-    }
-
-    AuthService.logoutUser(token).then(() => {
+    AuthService.logoutUser().then(() => {
       setUser(undefined)
-      setToken(undefined)
     }).catch((err: AxiosError) => {
         console.error("Network error: " + err.message)
         alert("Erreur: êtes-vous bien connecté à internet ?")
@@ -77,9 +66,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
     <UserContext.Provider
       value={{
         user,
-        token,
         setUser: setUserCtx,
-        setToken: setTokenCtx,
         logoutUser,
         loginUser,
         isLogged,
