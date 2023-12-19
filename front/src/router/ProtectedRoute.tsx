@@ -22,7 +22,7 @@ export const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
 
   useEffect(() => {
     checkAuth()
-  }, [isLoading])
+  }, [])
 
   if ((!isUserLogged && !isLoading) 
     || (role == UserType.ADMIN && user?.role != UserType.ADMIN)) {
