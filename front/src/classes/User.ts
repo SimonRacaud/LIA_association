@@ -1,7 +1,7 @@
 
 export enum UserType {
-  MEMBRE,
-  ADMIN
+  MEMBRE = 'MEMBRE',
+  ADMIN = 'ADMIN'
 }
 export const userTypeToString = (type: UserType): string => {
   return UserType[type];
