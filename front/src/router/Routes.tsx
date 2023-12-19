@@ -2,7 +2,6 @@ import { UserType } from "classes/User";
 import HomePage from "page/home/HomePage";
 import Settings from "page/settings/Settings";
 import SignIn from "page/signin/SignIn";
-import SignUp from "page/signup/SignUp";
 
 export interface Route {
     path: string,
@@ -21,12 +20,6 @@ export const routes: Route[] = [
         path: '/login',
         element: <SignIn />,
         protected: false,
-    },
-    {
-        path: '/signup',
-        element: <SignUp />,
-        protected: true,
-        role: UserType.ADMIN
     },
     {
         path: '/settings',
