@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react'
-import User from 'classes/User'
+import User, { UserType } from 'classes/User'
 import { AuthService } from 'services/authService'
 import { AxiosError } from 'axios'
 import LoginReponse from 'models/LoginResponse'
@@ -10,8 +10,8 @@ export type UserContextType = {
   setUser: (user: User) => void
   setToken: (token: string) => void
   logoutUser: () => void
-  loginUser: (username: string, password: string) => Promise<User | null>
-  isLogged: () => boolean
+  loginUser: (username: string, password: string) => Promise<boolean>
+  isLogged: () => Promise<boolean>
 }
 
 const UserContext = createContext({} as UserContextType)
@@ -30,8 +30,10 @@ const UserProvider = ({ children }: UserProviderProps) => {
   const setTokenCtx = (token: string) => {
     setToken(token)
   }
-  const isLogged = () => {
-    return user != undefined && token != undefined
+  const isLogged = async () => {
+    if (!token || !user)
+      return false
+    return (await AuthService.getAuthentifiedUser(token)) != null
   }
 
   /**
@@ -40,7 +42,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
    * @param password 
    * @returns Promise<User | null>
    */
-  const loginUser = async (username: string, password: string): Promise<User | null> => {
+  const loginUser = async (username: string, password: string): Promise<boolean> => {
     const response: LoginReponse = await AuthService.loginUser(username, password);
 
     setToken(response.token)
@@ -48,9 +50,10 @@ const UserProvider = ({ children }: UserProviderProps) => {
     const user = await AuthService.getAuthentifiedUser(response.token);
     if (user) {
         console.info("Logged successfully:", user.username, user.email, user.role)
+        user.role = UserType[user.role] as unknown as UserType
         setUser(user)
     }
-    return user
+    return user != null
   }
 
   /**

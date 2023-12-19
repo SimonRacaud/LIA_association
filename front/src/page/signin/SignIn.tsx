@@ -14,29 +14,25 @@ import LiaLogo from '../../components/LiaLogo';
 import { useUser } from 'context/UserContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Alert } from '@mui/material';
-import User from 'classes/User';
-
 
 export default function SignIn() {
-    const {setUser, loginUser, isLogged } = useUser()
+    const {loginUser, isLogged } = useUser()
     const navigate = useNavigate()
     const [isLoginSuccess, setIsLoginSuccess] = useState(false)
     const [error, setError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
 
     const checkAuth = async () => {
-        const isAuth = isLogged();
+        const isAuth = await isLogged();
 
         setIsLoginSuccess(isAuth)
-      }
-    
-      useEffect(() => {
+    }
+    useEffect(() => {
         checkAuth()
-      })
-    
-      if (isLoginSuccess) {
+    })
+    if (isLoginSuccess) {
         return <Navigate to="/" replace={true} />
-      }
+    }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         setError(false)
@@ -52,8 +48,8 @@ export default function SignIn() {
             return // Abort
         }
         loginUser(loginData.username, loginData.password)
-        .then((user: User | null) => {
-            if (user) {
+        .then((success: boolean) => {
+            if (success) {
                 navigate('/')
             } else {
                 setError(true)
