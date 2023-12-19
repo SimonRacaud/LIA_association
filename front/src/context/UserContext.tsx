@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react'
 import User, { UserType } from 'classes/User'
-import { AuthService } from 'services/authService'
+import { AuthService } from 'services/AuthService'
 import { AxiosError } from 'axios'
 import LoginReponse from 'models/LoginResponse'
 
@@ -42,12 +42,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
   const loginUser = async (username: string, password: string): Promise<boolean> => {
     const response: LoginReponse = await AuthService.loginUser(username, password);
 
-    const user = await AuthService.getAuthentifiedUser();
-    if (user) {
-        console.info("Logged successfully:", user.username, user.email, user.role)
-        setUser(user)
-    }
-    return user != null
+    return true
   }
 
   /**
