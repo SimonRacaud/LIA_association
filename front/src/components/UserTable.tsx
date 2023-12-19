@@ -4,7 +4,7 @@ import UserRow from "./UserRow";
 
 export interface UserTableProps 
 {
-    userList: User[],
+    userList?: User[],
     onEditUser?: (uuid: string) => void
     onRemoveUser: (uuid: string) => void
 }
@@ -27,14 +27,14 @@ export default function UserTable({ userList, onEditUser, onRemoveUser }: UserTa
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                {userList.map((user) => (
+                {userList?.map((user) => (
                     <UserRow key={user.username} user={user} 
                         onRemove={onRemoveUser} 
                         onEdit={onEditUser} />
                 ))}
                 </TableBody>
             </Table>
-            {userList.length == 0 &&
+            {userList?.length == 0 &&
                 <Typography variant="subtitle2" color="text.secondary" sx={{ mx: 1}}>
                     Aucun membre inscrit
                 </Typography>

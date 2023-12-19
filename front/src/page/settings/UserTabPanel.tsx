@@ -1,13 +1,15 @@
 import UserTable from "components/UserTable"
 import { CustomTabPanel, TabPanelProps } from "./Settings"
-import User, { UserType } from "classes/User"
+import User from "classes/User"
 import { Button, Container, IconButton } from "@mui/material"
 import CreateIcon from '@mui/icons-material/Add'
 import { useNavigate } from "react-router-dom"
 import EditDialog from "components/EditDialog"
-import { useReducer, useState } from "react"
+import { useEffect, useReducer, useState } from "react"
 import UserForm from "components/UserForm"
 import AlertDialog from "components/AlertDialog"
+import UserService from "services/UserService"
+import Paginated from "models/Paginated"
 
 export default function UserTabPanel({ tabIndex }: TabPanelProps)
 {
@@ -16,18 +18,51 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
     const [ showAlertDialog, setShowAlertDialog ] = useState(false)
     const [ selectedUser, setSelectedUser ] = useState<User | undefined>(undefined)
     const [, forceUpdate] = useReducer(x => x + 1, 0);
+    const [ page, setPage ] = useState(1)
+    const [ listSize, setListSize ] = useState(5)
+    const [ list, setList ] = useState<Paginated<User>>()
 
-    const userList = [ 
-        new User("42", "Simon.R", UserType.ADMIN, new Date(), "simon@email.fr")
-    ] // TODO: debug data
+    useEffect(() => {
+        loadUserList();
+    }, [])
 
+    const loadUserList = () => {
+        UserService.getUsers(page, listSize)
+        .then((paginated) => {
+            setList(paginated)
+        })
+        .catch((error) => {
+            console.error("Network: ", error.message)
+            setList(undefined)
+        })
+    }
     const onUserEdit = (uuid: string) => {
         // Open user edit dialog
         setSelectedUser(_getUserFromUuid(uuid))
         setShowEditDialog(true)
     }
     const onUserEditSubmit = () => {
-        // TODO : API call => update selectedUser
+        if (selectedUser) {
+            // API call
+            if (selectedUser.id != '') { 
+                // New user created:
+                UserService.updateUser(selectedUser)
+                .catch((error) => {
+                    console.error("Network: ", error.message)
+                    alert("Echec de la mise à jour de l'utilisateur")
+                })
+            } else {
+                // Editing existing user:
+                UserService.createUser(selectedUser)
+                .catch((error) => {
+                    console.error("Network: ", error.message)
+                    alert("Echec de la création de l'utilisateur")
+                })
+                .then(() => {
+                    loadUserList() // refresh list
+                })
+            }
+        }
         setShowEditDialog(false)
     }
     const onCloseUserEditDialog = () => {
@@ -39,14 +74,25 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
     }
     const applyUserRemoval = () => {
         // Send remove Request to API
-        // TODO: API call => selectedUser?.id
+        if (selectedUser) {
+            UserService.removeUser(selectedUser.id)
+            .catch((error) => {
+                console.error("Network: ", error.message)
+                alert("Echec de la suppression de l'utilisateur")
+            })
+            .then(() => {
+                // Refresh user list
+                loadUserList();
+            })
+        }
     }
     const onUserCreate = () => {
         // Open user create form dialog
-        navigate('/signup')
+        setSelectedUser(undefined)
+        setShowEditDialog(true)
     }
     const _getUserFromUuid = (uuid: string) => {
-        return userList.find((user: User) => user.id == uuid)
+        return list?.data.find((user: User) => user.id == uuid)
     }
 
     return (
@@ -54,7 +100,7 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
             <IconButton size='medium' onClick={onUserCreate} sx={{ mb: 1 }}>
                 <CreateIcon />
             </IconButton>
-            <UserTable userList={userList} onEditUser={onUserEdit} onRemoveUser={onUserRemove} />
+            <UserTable userList={list?.data} onEditUser={onUserEdit} onRemoveUser={onUserRemove} />
             <EditDialog 
                 open={showEditDialog} 
                 onClose={onCloseUserEditDialog} 
