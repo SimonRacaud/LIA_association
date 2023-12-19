@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\UserRole;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController;
 use App\Http\Resources\UserResource;
 
 use App\Models\User;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class UsersController extends BaseController
@@ -58,10 +60,10 @@ class UsersController extends BaseController
         try {
             $user = User::findOrFail($id);
             $data = $request->validate([
-                'username' => 'unique:users|max:255',
-                'email' => 'email|unique:users',
+                'username' => [Rule::unique('users')->ignore($user->id, 'id'), 'max:255'],
+                'email' => ['email', Rule::unique('users')->ignore($user->id, 'id')],
                 'password' => 'min:8',
-                'role' => 'in:ADMIN,MEMBRE'
+                'role' => [Rule::in(array_column(UserRole::cases(), 'value'))],
             ]);
 
             if (array_key_exists('password', $data)) {

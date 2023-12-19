@@ -26,7 +26,7 @@ class RegisterController extends BaseController
     public function register(Request $request): JsonResponse
     {
         try {
-            $validated = $request->validate(User::$validation);
+            $validated = $request->validate(User::validation());
 
             $input = $validated;
             $input['password'] = bcrypt($input['password']);
@@ -36,7 +36,7 @@ class RegisterController extends BaseController
 
             return $this->sendResponse($success);
         } catch (ValidationException $exception) {
-            return $this->sendError('Validation Error.', $exception->errors());
+            return $this->sendError('Validation Error.', $exception->errors(), 400);
         }
     }
 

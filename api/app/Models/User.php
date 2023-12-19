@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Validation\Rule;
 use Laravel\Sanctum\HasApiTokens;
 
 enum UserRole:string
@@ -49,12 +50,14 @@ class User extends Authenticatable
         'role' => UserRole::class
     ];
 
-    public static array $validation = [
-        'username' => ['required', 'unique:users', 'max:255'],
-        'email' => ['required', 'email', 'unique:users'],
-        'password' => ['required', 'min:8'],
-        'role' => ['required', 'in:ADMIN,MEMBRE']
-    ];
+    public static function validation() {
+        return [
+            'username' => ['required', 'unique:users', 'max:255'],
+            'email' => ['required', 'email', 'unique:users'],
+            'password' => ['required', 'min:8'],
+            'role' => ['required', Rule::in(array_column(UserRole::cases(), 'value'))]
+        ];
+    }
 
     public function teams(): BelongsToMany
     {
