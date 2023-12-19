@@ -24,8 +24,9 @@ export const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
     checkAuth()
   }, [])
 
-  if ((!isUserLogged && !isLoading) 
-    || (role == UserType.ADMIN && user?.role != UserType.ADMIN)) {
+  if (!isLoading && 
+      (!isUserLogged 
+      || (role == UserType.ADMIN && user?.role != UserType.ADMIN))) {
     return <Navigate to="/login" replace />
   }
 
