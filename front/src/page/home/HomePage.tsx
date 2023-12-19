@@ -118,11 +118,15 @@ export default function HomePage() {
     const _getEventFromUuid = (uuid: string) => {
         return rows.find((e: Event) => e.uuid == uuid)
     }
+    const onLogout = () => {
+        logoutUser()
+        navigate('/login')
+    }
 
     return (
         <Container>
             <HomeHeader onClickSettings={onOpenSettings} 
-                onClickCreateEvent={onCreateEvent} user={user} onClickLogout={logoutUser} />
+                onClickCreateEvent={onCreateEvent} user={user} onClickLogout={onLogout} />
             <TableContainer component={Paper} >
                 <Table aria-label="simple table">
                     <TableHead>

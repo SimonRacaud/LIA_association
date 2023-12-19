@@ -66,6 +66,8 @@ class RegisterController extends BaseController
     public function logout(Request $request): JsonResponse
     {
         $request->user('sanctum')->tokens()->delete();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return $this->sendResponse(['message' => 'success']);
     }
