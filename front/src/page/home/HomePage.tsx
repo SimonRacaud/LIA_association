@@ -14,6 +14,7 @@ import AlertDialog from "components/AlertDialog";
 import LogoutIcon from '@mui/icons-material/Logout'
 import EventService from "services/EventService";
 import Paginated, { PaginationQuery } from "models/Paginated";
+import { AxiosError } from "axios";
 
 type HomeHeaderProps = {
     onClickSettings: () => void
@@ -71,10 +72,15 @@ export default function HomePage() {
     }, [])
 
     const loadEventList = async () => {
-        // API call
-        setEventList(
-            await networkEvent.getList(listQuery.page, listQuery.size)
-        )
+        try {
+            // API call
+            setEventList(
+                await networkEvent.getList(listQuery.page, listQuery.size)
+            )
+        } catch (error) {
+            console.error((error as AxiosError).message)
+            alert("Echech")
+        }
     }
     const onCloseDialog = () => {
         setOpenShowDialog(false)
@@ -93,8 +99,13 @@ export default function HomePage() {
     const onApplyDeleteEvent = async () => {
         setOpenAlertDialog(false)
         if (selectedEvent) {
-            // API call : remove event
-            await networkEvent.remove(selectedEvent.uuid)
+            try {
+                // API call : remove event
+                await networkEvent.remove(selectedEvent.uuid)
+            } catch (error) {
+                console.error((error as AxiosError).message)
+                alert("Echech")
+            }
             // Refresh list
             loadEventList();
         }

@@ -25,6 +25,7 @@ export default function EventEditDialog({open, onClose, toEdit}: EventEditDialog
             }
         } catch (error) {
             console.error("Network error:", (error as AxiosError)?.message)
+            alert("Echec")
         }
         onClose()
     }
