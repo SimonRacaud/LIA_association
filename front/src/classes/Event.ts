@@ -1,7 +1,14 @@
 import dayjs, { Dayjs } from "dayjs";
 import Team from "./Team"
+import IDataModel from "models/IModel";
 
-export default class Event {
+export interface EventDto extends IDataModel {
+    title: string
+    date: string
+    teams: Team[]
+}
+
+export default class Event implements IDataModel {
     uuid: string
     title: string
     date: Dayjs;

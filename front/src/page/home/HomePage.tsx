@@ -1,20 +1,19 @@
 import { Button, Container, IconButton, Pagination, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import Event from "classes/Event";
-import Team from "classes/Team";
-import TeamTemplate, { TeamType } from "classes/TeamTemplate";
 import User, { UserType } from "classes/User";
 import ShowDate from "components/ShowDate";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EventShowDialog from "./EventShowDialog";
 import EventEditDialog from './EventEditDialog';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CreateIcon from '@mui/icons-material/Add';
-import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "context/UserContext";
 import { Item } from "components/EventTeamCardList";
 import AlertDialog from "components/AlertDialog";
 import LogoutIcon from '@mui/icons-material/Logout'
+import EventService from "services/EventService";
+import Paginated, { PaginationQuery } from "models/Paginated";
 
 type HomeHeaderProps = {
     onClickSettings: () => void
@@ -58,42 +57,30 @@ export default function HomePage() {
     const [ openAlertDialog, setOpenAlertDialog ] = useState(false)
     const [ openShowDialog, setOpenShowDialog ] = useState(false)
     const [ openEditDialog, setOpenEditDialog ] = useState(false)
+    const [ eventList, setEventList ] = useState<Paginated<Event>>()
+    const [listQuery, setListQuery ] = useState<PaginationQuery>({
+        page: 1,
+        size: 10
+    })
     const { user, logoutUser } = useUser()
     const navigate = useNavigate()
+    const networkEvent = EventService.getInstance();
 
-    const rows = [
-        // TODO : debug entry
-        new Event("", "Distribution", dayjs(), [
-            new Team("1",
-                new TeamTemplate("1", "Leclerc sablé / super U arnage", TeamType.RAMASSAGE, "9876 A", 2),
-                []
-            ),
-            new Team("2",
-                new TeamTemplate("2", "Carrefour Sud / La Pointe", TeamType.RAMASSAGE, "Sud: 02.43.61.30.96, Pointe: 2312 (v)", 2),
-                [
-                    new User("a", "Tom", UserType.MEMBRE, new Date(), "tom@lia.fr"),
-                    new User("", "Simon", UserType.ADMIN, new Date(), "simon@lia.fr"),
-                ]
-            ),
-            new Team("3",
-                new TeamTemplate("3", "U express / Bollé", TeamType.RAMASSAGE, "02.43.34.57.61", 1),
-                []
-            ),
-            new Team("4",
-                new TeamTemplate("4", "Leclerc fontenelle drive / Super U bonnétable", TeamType.RAMASSAGE, "Lec: 1234, Sup: 2312 (v)", 2),
-                []
-            ),
-            new Team("5",
-                new TeamTemplate("5", "Utile St george du bois", TeamType.RAMASSAGE, "2312 (v)", 1),
-                []
-            )
-        ]),
-    ];
+    useEffect(() => {
+        loadEventList();
+    }, [])
 
+    const loadEventList = async () => {
+        // API call
+        setEventList(
+            await networkEvent.getList(listQuery.page, listQuery.size)
+        )
+    }
     const onCloseDialog = () => {
         setOpenShowDialog(false)
         setOpenEditDialog(false)
         setSelecteEvent(undefined)
+        loadEventList()
     }
     const onEditEvent = (event: Event) => () => {
         setSelecteEvent(event)
@@ -103,10 +90,14 @@ export default function HomePage() {
         setSelecteEvent(_getEventFromUuid(uuid))
         setOpenAlertDialog(true)
     }
-    const onApplyDeleteEvent = () => {
+    const onApplyDeleteEvent = async () => {
         setOpenAlertDialog(false)
-        // TODO : API call : remove event (selectedEvent)
-        // TODO : Refresh list
+        if (selectedEvent) {
+            // API call : remove event
+            await networkEvent.remove(selectedEvent.uuid)
+            // Refresh list
+            loadEventList();
+        }
     }
     const onCreateEvent = () => {
         setSelecteEvent(undefined)
@@ -116,7 +107,7 @@ export default function HomePage() {
         navigate('/settings')
     }
     const _getEventFromUuid = (uuid: string) => {
-        return rows.find((e: Event) => e.uuid == uuid)
+        return eventList?.data.find((e: Event) => e.uuid == uuid)
     }
     const onLogout = () => {
         logoutUser()
@@ -143,12 +134,12 @@ export default function HomePage() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((event: Event) => (
+                        {eventList?.data.map((event: Event) => (
                             <TableRow
                             key={event.uuid}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                <TableCell component="th" scope="row" sx={{ minWidth: 90 }}>
+                                <TableCell component="th" scope="row" sx={{ minWidth: 90 }}> 
                                     <ShowDate dateDayjs={event.date} />
                                 </TableCell>
                                 <TableCell>{event.title}</TableCell>

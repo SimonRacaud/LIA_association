@@ -1,3 +1,5 @@
+import IDataModel from "models/IModel";
+
 export enum TeamType {
     RAMASSAGE,
     DISTRIB
@@ -9,7 +11,7 @@ export const teamTypeToString = (teamType: TeamType): string => {
 
 export const teamTypeOptions = [ TeamType.RAMASSAGE, TeamType.DISTRIB ]
 
-export default class TeamTemplate {
+export default class TeamTemplate implements IDataModel {
     uuid: string
     title: string
     type: TeamType
