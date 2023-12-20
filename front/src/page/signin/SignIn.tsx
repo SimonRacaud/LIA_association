@@ -82,7 +82,7 @@ export default function SignIn() {
                 <LiaLogo />
             </Avatar>
             <Typography component="h1" variant="h5">
-                Planification des équipes
+                Calendrier des équipes
             </Typography>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
