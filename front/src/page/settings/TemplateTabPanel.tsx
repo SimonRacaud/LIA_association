@@ -1,4 +1,4 @@
-import { Button, Container, IconButton } from "@mui/material";
+import { Button, Container, IconButton, Pagination } from "@mui/material";
 import { CustomTabPanel, TabPanelProps } from "./Settings";
 import CreateIcon from '@mui/icons-material/Add'
 import EditDialog from "components/EditDialog";
@@ -29,9 +29,9 @@ export default function TemplateTabPanel({ tabIndex }: TabPanelProps)
     useEffect(() => {
         fetchList()
     }, [])
-    const fetchList = async () => {
+    const fetchList = async (page?: number) => {
         try {
-            setList(await network.getList(listQuery.page, listQuery.size))
+            setList(await network.getList(page ?? listQuery.page, listQuery.size))
         } catch (error) {
             console.error((error as AxiosError).message)
             alert("Echec")
@@ -88,6 +88,13 @@ export default function TemplateTabPanel({ tabIndex }: TabPanelProps)
     const _getFromUuid = (uuid: string) => {
         return list?.data.find((t: TeamTemplate) => t.uuid == uuid)
     }
+    const onPageChange = (e: any, page: number) => {
+        setListQuery({
+            ...listQuery,
+            page: page
+        })
+        fetchList(page)
+    }
 
     return (
         <CustomTabPanel value={tabIndex} index={1}>
@@ -95,6 +102,7 @@ export default function TemplateTabPanel({ tabIndex }: TabPanelProps)
                 <CreateIcon />
             </IconButton>
             <TeamTemplateTable templateList={list?.data} onEdit={onEdit} onRemove={onRemove} />
+            <Pagination count={list?.max} color="primary" sx={{ my: 2 }} onChange={onPageChange} />
             <EditDialog
                 open={showEditDialog} 
                 onClose={onCloseEditDialog} 

@@ -1,7 +1,7 @@
 import UserTable from "components/UserTable"
 import { CustomTabPanel, TabPanelProps } from "./Settings"
 import User from "classes/User"
-import { Button, Container, IconButton } from "@mui/material"
+import { Button, Container, IconButton, Pagination } from "@mui/material"
 import CreateIcon from '@mui/icons-material/Add'
 import { useNavigate } from "react-router-dom"
 import EditDialog from "components/EditDialog"
@@ -19,15 +19,15 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
     const [ selectedUser, setSelectedUser ] = useState<User | undefined>(undefined)
     const [, forceUpdate] = useReducer(x => x + 1, 0);
     const [ page, setPage ] = useState(1)
-    const [ listSize, setListSize ] = useState(5)
+    const [ listSize, setListSize ] = useState(10)
     const [ list, setList ] = useState<Paginated<User>>()
 
     useEffect(() => {
         loadUserList();
     }, [])
 
-    const loadUserList = () => {
-        UserService.getUsers(page, listSize)
+    const loadUserList = (p?: number) => {
+        UserService.getUsers(p ?? page, listSize)
         .then((paginated) => {
             setList(paginated)
         })
@@ -94,6 +94,10 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
     const _getUserFromUuid = (uuid: string) => {
         return list?.data.find((user: User) => user.id == uuid)
     }
+    const onChangePage = (e: any, page: number) => {
+        setPage(page)
+        loadUserList(page)
+    }
 
     return (
         <CustomTabPanel value={tabIndex} index={0}>
@@ -101,6 +105,7 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
                 <CreateIcon />
             </IconButton>
             <UserTable userList={list?.data} onEditUser={onUserEdit} onRemoveUser={onUserRemove} />
+            <Pagination count={list?.max} page={page} onChange={onChangePage} color="primary" sx={{ my: 2 }} />
             <EditDialog 
                 open={showEditDialog} 
                 onClose={onCloseUserEditDialog} 
