@@ -11,7 +11,7 @@ export type EventEditDialog = {
 }
 
 export default function EventEditDialog({open, onClose, toEdit}: EventEditDialog) 
-{    
+{
     const networkEvent = EventService.getInstance();
 
     const onSubmitForm = async (e: Event) => {
@@ -31,7 +31,7 @@ export default function EventEditDialog({open, onClose, toEdit}: EventEditDialog
     }
 
     return (
-        <Dialog onClose={() => onClose(false)} open={open} maxWidth='sm' fullWidth>
+        <Dialog onClose={() => onClose(true)} open={open} maxWidth='sm' fullWidth>
             <DialogTitle>Création d'un événement</DialogTitle>
             <Container>
                 <EventForm onSubmit={onSubmitForm} initEvent={toEdit} />
