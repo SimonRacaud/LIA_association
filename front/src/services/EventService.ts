@@ -20,7 +20,7 @@ export default class EventService extends NetworkService<Event, EventDto> {
     return this.instance;
   }
 
-  public async getList(page = 0, size = 10): Promise<Paginated<Event>> {
+  public async getList(page = 1, size = 10): Promise<Paginated<Event>> {
     const result: Paginated<EventDto> = await this.core.getList(page, size);
 
     return {

@@ -71,11 +71,11 @@ export default function HomePage() {
         loadEventList();
     }, [])
 
-    const loadEventList = async () => {
+    const loadEventList = async (page?: number, size?: number) => {
         try {
             // API call
             setEventList(
-                await networkEvent.getList(listQuery.page, listQuery.size)
+                await networkEvent.getList(page ?? listQuery.page, size ?? listQuery.size)
             )
         } catch (error) {
             console.error((error as AxiosError).message)
@@ -105,7 +105,7 @@ export default function HomePage() {
                 await networkEvent.remove(selectedEvent.uuid)
             } catch (error) {
                 console.error((error as AxiosError).message)
-                alert("Echech")
+                alert("Echec")
             }
             // Refresh list
             loadEventList();
@@ -124,6 +124,13 @@ export default function HomePage() {
     const onLogout = () => {
         logoutUser()
         navigate('/login')
+    }
+    const onChangePage = (e: any, page: number) => {
+        setListQuery({
+            ...listQuery,
+            page: page
+        })
+        loadEventList(page); // Send API request
     }
 
     return (
@@ -177,7 +184,7 @@ export default function HomePage() {
                         ))}
                     </TableBody>
                 </Table>
-                <Pagination count={5} color="primary" sx={{ my: 2 }} disabled />
+                <Pagination count={eventList?.max} color="primary" sx={{ my: 2 }} onChange={onChangePage} />
                 <EventShowDialog open={openShowDialog} event={selectedEvent} onClose={onCloseDialog} ></EventShowDialog>
                 <EventEditDialog open={openEditDialog} onClose={onCloseDialog} 
                     toEdit={selectedEvent} />
