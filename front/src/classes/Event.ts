@@ -5,7 +5,7 @@ import IDataModel from "models/IModel";
 export interface EventDto extends IDataModel {
     title: string
     date: string
-    teams: Team[]
+    teams?: Team[]
 }
 
 export default class Event implements IDataModel {

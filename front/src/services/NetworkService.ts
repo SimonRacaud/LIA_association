@@ -27,8 +27,9 @@ export default class NetworkCoreService<T extends IDataModel> {
     this.endpoint = route;
   }
 
-  public async create(data: T): Promise<void> {
-    await apiInstance.post(this.endpoint, data);
+  public async create(data: T): Promise<T> {
+    const response = await apiInstance.post(this.endpoint, data);
+    return response.data;
   }
 
   public async getList(page = 0, size = 10): Promise<Paginated<T>> {
@@ -56,8 +57,9 @@ export default class NetworkCoreService<T extends IDataModel> {
     }
   }
 
-  public async update(data: T): Promise<void> {
-    await apiInstance.put(`${this.endpoint}/${data.uuid}`, data);
+  public async update(data: T): Promise<T> {
+    const response = await apiInstance.put(`${this.endpoint}/${data.uuid}`, data);
+    return response.data;
   }
 
   public async remove(id: string): Promise<void> {

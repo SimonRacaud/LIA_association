@@ -2,6 +2,9 @@ import Event, { EventDto } from "classes/Event";
 import Paginated from "models/Paginated";
 import dayjs from "dayjs";
 import { NetworkService } from "./NetworkService";
+import Team from "classes/Team";
+import TeamService from "./TeamService";
+import { AxiosError } from "axios";
 
 export default class EventService extends NetworkService<Event, EventDto> {
   constructor() {
@@ -22,12 +25,7 @@ export default class EventService extends NetworkService<Event, EventDto> {
 
     return {
       data: result.data.map((d) => {
-        return new Event(
-          d.uuid,
-          d.title,
-          dayjs(d.date, 'DD-MM-YYYY'),
-          d.teams
-        );
+        return new Event(d.uuid, d.title, dayjs(d.date, "DD-MM-YYYY"), d.teams);
       }),
       max: result.max,
       page: result.page,
@@ -35,31 +33,86 @@ export default class EventService extends NetworkService<Event, EventDto> {
   }
 
   public async update(data: Event): Promise<void> {
-    await this.core.update({
-      ...data,
+    const event = await this.core.update({
+      uuid: data.uuid,
+      title: data.title,
       date: data.date.format("DD/MM/YYYY"),
     });
+    // Create teams:
+    await Promise.all(
+      data.teams.map(async (team) => {
+        // Check if the team has to be added to the event
+        const search = event.teams?.find((t: Team) => t.uuid === team.uuid);
+
+        if (!search) {
+          try {
+            await TeamService.create({
+              event_uuid: event.uuid,
+              template_uuid: team.template.uuid,
+            });
+          } catch (error) {
+            console.error((error as AxiosError).message);
+            alert("Echec de la création de l'équipe");
+          }
+        }
+      })
+    );
+
+    // Remove teams:
+    if (event.teams) {
+      await Promise.all(
+        event.teams?.map(async (team) => {
+          // Check if the team is no longer in the event
+          const search = data.teams.find((t: Team) => t.uuid === team.uuid);
+
+          if (!search) {
+            try {
+              await TeamService.remove(team.uuid);
+            } catch (error) {
+              console.error((error as AxiosError).message);
+              alert("Echec de la suppression d'une équipe");
+            }
+          }
+        })
+      );
+    }
   }
 
   public async create(data: Event): Promise<void> {
-    await this.core.create({
-        ...data,
-        date: data.date.format("DD/MM/YYYY")
+    const event = await this.core.create({
+      uuid: "",
+      title: data.title,
+      date: data.date.format("DD/MM/YYYY"),
     });
+
+    // create teams
+    await Promise.all(
+      data.teams.map(async (team) => {
+        try {
+          await TeamService.create({
+            event_uuid: event.uuid,
+            template_uuid: team.template.uuid,
+          });
+        } catch (error) {
+          console.error((error as AxiosError).message);
+          alert("Echec de la création de l'équipe");
+        }
+      })
+    );
   }
   public async getOne(id: string): Promise<Event | null> {
     const result = await this.core.getOne(id);
     if (result) {
-        return new Event(
-            result.uuid,
-            result.title,
-            dayjs(result.date, 'DD-MM-YYYY'),
-            result.teams
-        )
+      return new Event(
+        result.uuid,
+        result.title,
+        dayjs(result.date, "DD-MM-YYYY"),
+        result.teams
+      );
     }
-    return null
+    return null;
   }
   public async remove(id: string): Promise<void> {
-    await this.core.remove(id)
+    await this.core.remove(id);
   }
 }
