@@ -42,8 +42,7 @@ export default function HomePage() {
         )
       );
     } catch (error) {
-      console.error((error as AxiosError).message);
-      alert("Echech");
+      console.error("Network error:", (error as AxiosError).message);
     }
   };
   const onCloseDialog = (refresh: boolean = false) => {
@@ -59,7 +58,7 @@ export default function HomePage() {
         // API call : remove event
         await networkEvent.remove(selectedEvent.uuid);
       } catch (error) {
-        console.error((error as AxiosError).message);
+        console.error("Network error:", (error as AxiosError).message);
         alert("Echec");
       }
       // Refresh list
