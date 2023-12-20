@@ -18,7 +18,7 @@ export default function TeamTemplateForm({template, setTemplate, lock}: TeamTemp
         const value = event.target.value
 
         if (template) {
-            template.type = teamTypeOptions[Number(value)]
+            template.type = value as TeamType
             setTemplate(template, true)
         }
     }

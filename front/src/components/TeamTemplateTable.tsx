@@ -25,7 +25,7 @@ function TeamTemplateTableRow({ template, onEdit, onRemove }: EventTeamTableRowP
 }
 
 export type TeamTemplateTableProps = {
-    templateList: TeamTemplate[]
+    templateList?: TeamTemplate[]
     onEdit: (uuid: string) => void
     onRemove: (uuid: string) => void
 }
@@ -45,7 +45,7 @@ export default function TeamTemplateTable({ templateList, onEdit, onRemove }: Te
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                {templateList.map((template) => (
+                {templateList?.map((template) => (
                     <TeamTemplateTableRow key={template.uuid} template={template} 
                         onEdit={onEdit} onRemove={onRemove} />
                 ))}

@@ -1,8 +1,8 @@
 import IDataModel from "models/IModel";
 
 export enum TeamType {
-    RAMASSAGE,
-    DISTRIB
+    RAMASSAGE = 'RAMASSAGE',
+    DISTRIB = 'DISTRIB'
 }
 
 export const teamTypeToString = (teamType: TeamType): string => {
@@ -25,4 +25,11 @@ export default class TeamTemplate implements IDataModel {
         this.note = note
         this.maxMember = maxMember
     }
+}
+
+export interface TeamTemplateDTO extends IDataModel {
+    title: string,
+    type: string,
+    note: string,
+    maxMember: number
 }
