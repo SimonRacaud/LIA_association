@@ -57,11 +57,7 @@ export default class NetworkCoreService<T extends IDataModel> {
   }
 
   public async update(data: T): Promise<void> {
-    const reqConfig: AxiosRequestConfig<{}> = {
-      withCredentials: true,
-    };
-
-    await apiInstance.put(`${this.endpoint}/${data.uuid}`, data, reqConfig);
+    await apiInstance.put(`${this.endpoint}/${data.uuid}`, data);
   }
 
   public async remove(id: string): Promise<void> {

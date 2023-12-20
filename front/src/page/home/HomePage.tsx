@@ -82,11 +82,12 @@ export default function HomePage() {
             alert("Echech")
         }
     }
-    const onCloseDialog = () => {
+    const onCloseDialog = (refresh: boolean = false) => {
         setOpenShowDialog(false)
         setOpenEditDialog(false)
         setSelecteEvent(undefined)
-        loadEventList()
+        if (refresh)
+            loadEventList()
     }
     const onEditEvent = (event: Event) => () => {
         setSelecteEvent(event)

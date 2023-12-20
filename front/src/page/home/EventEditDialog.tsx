@@ -6,7 +6,7 @@ import EventService from "services/EventService"
 
 export type EventEditDialog = {
     open: boolean
-    onClose: () => void
+    onClose: (refresh: boolean) => void
     toEdit?: Event // Null if we want to create a new event
 }
 
@@ -27,11 +27,11 @@ export default function EventEditDialog({open, onClose, toEdit}: EventEditDialog
             console.error("Network error:", (error as AxiosError)?.message)
             alert("Echec")
         }
-        onClose()
+        onClose(true)
     }
 
     return (
-        <Dialog onClose={onClose} open={open} maxWidth='sm' fullWidth>
+        <Dialog onClose={() => onClose(false)} open={open} maxWidth='sm' fullWidth>
             <DialogTitle>Création d'un événement</DialogTitle>
             <Container>
                 <EventForm onSubmit={onSubmitForm} initEvent={toEdit} />

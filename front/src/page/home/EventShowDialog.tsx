@@ -7,12 +7,14 @@ import EventTeamTable from "components/EventTeamTable";
 import { UserContextType, useUser } from "context/UserContext";
 import TableIcon from '@mui/icons-material/ViewList'
 import CardIcon from '@mui/icons-material/CalendarViewMonth'
-import { useState } from "react";
+import { useReducer, useState } from "react";
+import TeamService from "services/TeamService";
+import { AxiosError } from "axios";
 
 export interface EventDialogProps {
     open: boolean
     event?: Event
-    onClose: () => void
+    onClose: (refresh: boolean) => void
 }
 
 enum ViewMode {
@@ -23,6 +25,7 @@ enum ViewMode {
 export default function EventShowDialog({ open, event, onClose}: EventDialogProps) {
     const { user }: UserContextType = useUser()
     const [ viewMode, setViewMode ] = useState(ViewMode.TABLE)
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     const onSubscribeEventTeam = (eventTeam: Team) => {
         const userId = user?.id
@@ -30,23 +33,39 @@ export default function EventShowDialog({ open, event, onClose}: EventDialogProp
             // add 'user' to team
             const userMember = eventTeam.members.find((v) => v.id == user.id)
             if (userMember == undefined) {
-                // The current user isn't already a member
-                eventTeam.members.push(user)
-                // TODO : API Update
+                // API Update
+                TeamService.memberSubscribe(eventTeam.uuid, user.id)
+                .then(() => {
+                    // The current user isn't already a member
+                    eventTeam.members.push(user)
+                    forceUpdate();
+                })
+                .catch((error) => {
+                    console.error((error as AxiosError).message)
+                    alert("Echec")
+                })
             }
         }
     }
     const onUnsubscribeEventTeam = (eventTeam: Team) => {
         const userId = user?.id
         if (userId) {
-            // remove 'user" from team
-            eventTeam.members = eventTeam.members.filter((v) => v.id != user.id)
-            // TODO : API Update
+            // API Update
+            TeamService.memberUnsubscribe(eventTeam.uuid, user.id)
+            .then(() => {
+                // remove 'user" from team
+                eventTeam.members = eventTeam.members.filter((v) => v.id != user.id)
+                forceUpdate();
+            })
+            .catch((error) => {
+                console.error((error as AxiosError).message)
+                alert("Echec")
+            })
         }
     }
 
     return (
-        <Dialog onClose={onClose} open={open} maxWidth="lg">
+        <Dialog onClose={() => onClose(false)} open={open} maxWidth="lg">
             <DialogTitle>{event?.title}</DialogTitle>
             <Container sx={{
                 position: 'absolute',
