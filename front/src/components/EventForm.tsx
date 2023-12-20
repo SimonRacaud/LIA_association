@@ -7,6 +7,9 @@ import { useEffect, useReducer, useState } from "react";
 import Team from "classes/Team";
 import RemoveIcon from '@mui/icons-material/Delete';
 import TeamForm from "./TeamForm";
+import Paginated, { PaginationQuery } from "models/Paginated";
+import TeamTemplateService from "services/TeamTemplateService";
+import { AxiosError } from "axios";
 
 
 type EventFormProps = {
@@ -20,25 +23,31 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
     const [, forceUpdate] = useReducer(x => x + 1, 0);
     const [ showError, setShowError ] = useState(false)
     const [ error, setError ] = useState("")
-
-    const teamTemplateList = [ // DEBUG DATA
-        new TeamTemplate("1", "Leclerc sablé / super U arnage", TeamType.RAMASSAGE, "9876 A", 2),
-        new TeamTemplate("2", "Carrefour Sud / La Pointe", TeamType.RAMASSAGE, "Sud: 02.43.61.30.96, Pointe: 2312 (v)", 2),
-        new TeamTemplate("3", "U express / Bollé", TeamType.RAMASSAGE, "02.43.34.57.61", 1),
-        new TeamTemplate("4", "Leclerc fontenelle drive / Super U bonnétable", TeamType.RAMASSAGE, "Lec: 1234, Sup: 2312 (v)", 2),
-        new TeamTemplate("5", "Utile St george du bois", TeamType.RAMASSAGE, "2312 (v)", 1),
-    ]
-    useEffect(() => {
-        // TODO: Fetch team template list
+    const [ list, setList ] = useState<Paginated<TeamTemplate>>()
+    const [ listQuery, setListQuery ] = useState<PaginationQuery>({
+        page: 1,
+        size: 10
     })
+    const network = TeamTemplateService.getInstance();
 
+    useEffect(() => {
+        fetchList();
+    }, [])
 
+    const fetchList = async () => {
+        try {
+            setList(await network.getList(listQuery.page, listQuery.size));
+        } catch (error) {
+            console.error((error as AxiosError).message);
+            alert("Echec")
+        }
+    }
     const handleChangeNewTeamTemplate = (event: SelectChangeEvent) => {
         setNewTeamTemplate(Number(event.target.value));
     };
     const handleAddNewTeamTemplate = () => {
-        if (newTeamTemplate >= 0 && newTeamTemplate < teamTemplateList.length) {
-            const teamToAdd = teamTemplateList[newTeamTemplate]
+        if (list && newTeamTemplate >= 0 && newTeamTemplate < list.data.length) {
+            const teamToAdd = list.data[newTeamTemplate]
             if (event.teams.find((t) => teamToAdd.uuid == t.template.uuid) == undefined) {
                 // The team don't already exist in the event
                 const e = event
@@ -78,7 +87,9 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
             <TextField id="title" label="Titre" variant="standard" defaultValue={event.title} onChange={(e) => {
                 event.title = e.target.value
             }} />
-            <DatePicker value={event.date} disablePast format="DD/MM/YYYY" />
+            <DatePicker value={event.date} disablePast format="DD/MM/YYYY" onChange={(e) => {
+                if (e) event.date = e
+            }} />
 
             <Divider />
             
@@ -106,7 +117,7 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
                     value={newTeamTemplate.toString()}
                     onChange={handleChangeNewTeamTemplate}
                 >
-                    {teamTemplateList.map((template, index) => {
+                    {list?.data.map((template, index) => {
                         return (                   
                             <MenuItem key={template.title} value={index}>{template.title}</MenuItem>
                         )
