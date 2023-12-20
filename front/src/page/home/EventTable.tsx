@@ -64,6 +64,7 @@ export default function EventTable({
             <TableCell>Date</TableCell>
             <TableCell>Événement</TableCell>
             <TableCell align="right">Montrer</TableCell>
+            <TableCell align="right">Places libres</TableCell>
             {user?.role == UserType.ADMIN && (
               <TableCell align="right">Éditer</TableCell>
             )}
@@ -93,6 +94,7 @@ export default function EventTable({
                   Montrer
                 </Button>
               </TableCell>
+              <TableCell align="right">{event.getTeamsFreePlaces()}</TableCell>
               {user?.role == UserType.ADMIN && (
                 <TableCell align="right">
                   <Button

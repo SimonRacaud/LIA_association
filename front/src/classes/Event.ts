@@ -25,4 +25,11 @@ export default class Event implements IDataModel {
         this.date = date
         this.teams = teams
     }
+
+    public getTeamsFreePlaces(): number
+    {
+        return this.teams.reduce((prev, team, index, array) => {
+            return prev + (team.template.maxMember - team.members.length)
+        }, 0)
+    }
 }
