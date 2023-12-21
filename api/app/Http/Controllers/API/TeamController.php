@@ -38,15 +38,42 @@ class TeamController extends BaseController
     }
 
     /**
+     * Restricted endpoint with looser security to manager teams' subscriptions.
+     * Update the specified resource in storage.
+     */
+    public function updateMembers(Request $request, string $uuid)
+    {
+        try {
+            // Validation of data
+            $validator = Validator::make($request->all(), Team::validationUpdateMembers());
+            $newData = $validator->validate(); // throw
+            $data = Team::findOrFail($uuid);
+            // Attach users to the team:
+            $this->manageMembers($newData, $data);
+            //
+            $data->update($newData);
+            return $this->sendResponse(new TeamResource($data));
+        } catch (ValidationException $exception) {
+            return $this->sendError(ErrorMessage::VALIDATION_ERR, $exception->getMessage(), 400);
+        } catch (\InvalidArgumentException $exception) {
+            return $this->sendError(ErrorMessage::BODY_ERR, $exception->getMessage(), $exception->getCode());
+        } catch (ModelNotFoundException $e) {
+            return $this->sendError(ErrorMessage::NOT_FOUND, "", 404);
+        } catch (\Exception $exception) {
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
+        }
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $uuid)
     {
         try {
-            $data = Team::findOrFail($uuid);
             // Validation of data
             $validator = Validator::make($request->all(), Team::validationUpdate());
             $newData = $validator->validate(); // throw
+            $data = Team::findOrFail($uuid);
             if (key_exists('event_uuid', $newData) || key_exists('template_uuid', $newData)) {
                 // Validate that an event don't have two teams with the same template:
                 $eventId = (key_exists('event_uuid', $newData)) ? $newData['event_uuid'] : $data->event->uuid;

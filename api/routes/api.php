@@ -43,6 +43,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('event', [EventController::class, 'index']);
     Route::get('event/{uuid}', [EventController::class, 'show']);
 
+    // Used to subscribe/unsubscribe members to event's teams:
+    Route::put('team/subscribe/{uuid}', [TeamController::class, 'updateMembers']);
+
     Route::middleware('admin')->group(function () {
         // Admin access only
         Route::put('users/{user}', [UsersController::class, 'update']);

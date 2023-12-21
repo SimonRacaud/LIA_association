@@ -14,6 +14,14 @@ export default class TeamService {
         await apiInstance.put(`${TeamService.endpoint}/${uuid}`, data)
     }
 
+    /** 
+     * Can be accessed without admin privileges
+     */
+    public static async updateMembers(uuid: string, data: TeamDto): Promise<void>
+    {
+        await apiInstance.put(`${TeamService.endpoint}/subscribe/${uuid}`, data)
+    }
+
     public static async remove(uuid: string): Promise<void>
     {
         await apiInstance.delete(`${TeamService.endpoint}/${uuid}`)   
@@ -23,14 +31,14 @@ export default class TeamService {
 
     public static async memberSubscribe(teamUuid: string, userId: string): Promise<void>
     {
-        await TeamService.update(teamUuid, {
+        await TeamService.updateMembers(teamUuid, {
             members_add: [userId]
         })
     }
 
     public static async memberUnsubscribe(teamUuid: string, userId: string): Promise<void>
     {
-        await TeamService.update(teamUuid, {
+        await TeamService.updateMembers(teamUuid, {
             members_rm: [userId]
         })
     }

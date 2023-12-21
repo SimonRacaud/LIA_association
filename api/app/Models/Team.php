@@ -97,6 +97,26 @@ class Team extends Model
         ];
     }
 
+    /**
+     * Endpoint is accessed by non-admin users: subscribe / unsubscribe users
+     * @return array
+     */
+    public static function validationUpdateMembers(): array
+    {
+        return [
+            'members_add' => 'array',
+            "members_add.*" => [
+                "exists:App\Models\User,id",
+                "distinct"
+            ],
+            'members_rm' => 'array',
+            "members_rm.*" => [
+                "exists:App\Models\User,id",
+                "distinct"
+            ],
+        ];
+    }
+
     public static function booted(): void
     {
         static::creating(function ($model) {
