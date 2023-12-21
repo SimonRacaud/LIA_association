@@ -29,7 +29,7 @@ export default function SignIn() {
     }
     useEffect(() => {
         checkAuth()
-    })
+    }, [])
     if (isLoginSuccess) {
         return <Navigate to="/" replace={true} />
     }
