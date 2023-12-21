@@ -3,7 +3,9 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\UserRole;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\UniqueConstraintViolationException;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,12 +14,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-         \App\Models\User::factory()->create([
-             'name' => 'simon',
-             'email' => 'admin@fake.fr',
-             'password' => bcrypt('secret')
-         ]);
+        try {
+            \App\Models\User::create([
+                'username' => 'admin',
+                'email' => 'simonracaud@gmail.com',
+                'password' => bcrypt(env('ADMIN_USER_PASS')),
+                'role' => UserRole::ADMIN,
+            ]);
+        } catch (UniqueConstraintViolationException $e) {
+            dump("Seeder: admin user not created.", $e->getMessage());
+        }
     }
 }
