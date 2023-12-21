@@ -49,9 +49,9 @@ export default function TeamForm({ team, setTeam }: TeamFormProps)
                 <TeamTemplateForm template={team.template} setTemplate={updateTeamTemplate} lock={true} />
                 {/* Members */}
                 {team.members.length > 0 &&
-                <Card sx={{ m: 1, p: 1 }}>
-                    <Typography sx={{ my: 1 }}>Membres inscrits:</Typography>
-                    <UserTable userList={team.members} onRemoveUser={onRemoveUser} />
+                <Card sx={{ m: 1, p: 0 }}>
+                    <Typography sx={{ my: 1, ml: 2 }}>Membres inscrits:</Typography>
+                    <UserTable userList={team.members} onRemoveUser={onRemoveUser} short={true} />
                 </Card>
                 }
             </Stack>

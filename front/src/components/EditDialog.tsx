@@ -34,12 +34,12 @@ export default function EditDialog({open, onClose, title, children, maxWidth}: E
                 }
             </Box>
             <DialogTitle sx={{ pt: 1 }}>{title}</DialogTitle>
-            <Container sx={{
+            <Box sx={{
                 display: 'flex',
                 justifyContent: 'center',
             }}>
                 {children}
-            </Container>
+            </Box>
         </Dialog>
     )
 }

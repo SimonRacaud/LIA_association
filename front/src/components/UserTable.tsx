@@ -7,18 +7,23 @@ export interface UserTableProps
     userList?: User[],
     onEditUser?: (uuid: string) => void
     onRemoveUser: (uuid: string) => void
+    short?: boolean
 }
 
-export default function UserTable({ userList, onEditUser, onRemoveUser }: UserTableProps)
+export default function UserTable({ userList, onEditUser, onRemoveUser, short }: UserTableProps)
 {
     return (
         <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 500 }}>
+            <Table>
                 <TableHead>
                     <TableRow>
                         <TableCell>Nom d'utilisateur</TableCell>
-                        <TableCell>Rôle</TableCell>
-                        <TableCell>Date de création</TableCell>
+                        {!short &&
+                            <TableCell>Rôle</TableCell>
+                        }
+                        {!short &&
+                            <TableCell>Date de création</TableCell>
+                        }
                         <TableCell>E-mail</TableCell>
                         {onEditUser &&
                             <TableCell align='right'>Editer</TableCell>
@@ -30,7 +35,8 @@ export default function UserTable({ userList, onEditUser, onRemoveUser }: UserTa
                 {userList?.map((user) => (
                     <UserRow key={user.username} user={user} 
                         onRemove={onRemoveUser} 
-                        onEdit={onEditUser} />
+                        onEdit={onEditUser}
+                        short={short} />
                 ))}
                 </TableBody>
             </Table>
