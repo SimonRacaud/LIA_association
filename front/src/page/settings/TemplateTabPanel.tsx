@@ -1,4 +1,4 @@
-import { Button, Container, IconButton, Pagination } from "@mui/material";
+import { Box, Button, Container, IconButton, Pagination } from "@mui/material";
 import { CustomTabPanel, TabPanelProps } from "./Settings";
 import CreateIcon from '@mui/icons-material/Add'
 import EditDialog from "components/EditDialog";
@@ -110,7 +110,11 @@ export default function TemplateTabPanel({ tabIndex }: TabPanelProps)
                 <CreateIcon />
             </IconButton>
             <TeamTemplateTable templateList={list?.data} onEdit={onEdit} onRemove={onRemove} />
-            <Pagination count={list?.max} color="primary" sx={{ my: 2 }} onChange={onPageChange} />
+            <Box
+                display="flex"
+                justifyContent="center">
+                <Pagination count={list?.max} color="primary" sx={{ my: 2 }} onChange={onPageChange} />
+            </Box>
             <EditDialog
                 open={showEditDialog} 
                 onClose={onCloseEditDialog} 

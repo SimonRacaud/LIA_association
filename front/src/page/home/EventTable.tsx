@@ -1,5 +1,8 @@
 import {
+  Box,
   Button,
+  Container,
+  IconButton,
   Pagination,
   Paper,
   Table,
@@ -8,11 +11,14 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
 import Event from "classes/Event";
 import User, { UserType } from "classes/User";
 import ShowDate from "components/ShowDate";
 import Paginated, { PaginationQuery } from "models/Paginated";
+import LaunchIcon from "@mui/icons-material/Launch";
+import GroupIcon from "@mui/icons-material/Group";
 
 export type EventTableProps = {
   user?: User;
@@ -62,9 +68,9 @@ export default function EventTable({
         <TableHead>
           <TableRow>
             <TableCell>Date</TableCell>
+            <TableCell>Manque</TableCell>
+            <TableCell>Montrer</TableCell>
             <TableCell>Événement</TableCell>
-            <TableCell align="right">Montrer</TableCell>
-            <TableCell align="right">Places libres</TableCell>
             {user?.role == UserType.ADMIN && (
               <TableCell align="right">Éditer</TableCell>
             )}
@@ -79,22 +85,36 @@ export default function EventTable({
               key={event.uuid}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
-              <TableCell component="th" scope="row" sx={{ minWidth: 90 }}>
+              <TableCell component="th" scope="row">
                 <ShowDate dateDayjs={event.date} />
               </TableCell>
-              <TableCell>{event.title}</TableCell>
               <TableCell align="right">
-                <Button
-                  variant="contained"
+                <Container
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    p: 0
+                  }}
+                >
+                  <Typography sx={{ mr: 1 }}>
+                    {event.getTeamsFreePlaces()}
+                  </Typography>
+                  <GroupIcon />
+                </Container>
+              </TableCell>
+              <TableCell>
+                <IconButton
+                  aria-label="show-event"
+                  size="large"
                   onClick={() => {
                     setSelecteEvent(event);
                     setOpenShowDialog(true);
                   }}
                 >
-                  Montrer
-                </Button>
+                  <LaunchIcon />
+                </IconButton>
               </TableCell>
-              <TableCell align="right">{event.getTeamsFreePlaces()}</TableCell>
+              <TableCell>{event.title}</TableCell>
               {user?.role == UserType.ADMIN && (
                 <TableCell align="right">
                   <Button
@@ -121,12 +141,16 @@ export default function EventTable({
           ))}
         </TableBody>
       </Table>
-      <Pagination
-        count={eventList?.max}
-        color="primary"
-        sx={{ my: 2 }}
-        onChange={onChangePage}
-      />
+      <Box
+        display="flex"
+        justifyContent="center">
+        <Pagination
+          count={eventList?.max}
+          color="primary"
+          sx={{ my: 2 }}
+          onChange={onChangePage}
+        />
+      </Box>
     </TableContainer>
   );
 }

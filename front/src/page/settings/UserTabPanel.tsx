@@ -1,7 +1,7 @@
 import UserTable from "components/UserTable"
 import { CustomTabPanel, TabPanelProps } from "./Settings"
 import User from "classes/User"
-import { Button, Container, IconButton, Pagination } from "@mui/material"
+import { Box, Button, Container, IconButton, Pagination } from "@mui/material"
 import CreateIcon from '@mui/icons-material/Add'
 import EditDialog from "components/EditDialog"
 import { useEffect, useReducer, useState } from "react"
@@ -113,7 +113,11 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
                 <CreateIcon />
             </IconButton>
             <UserTable userList={list?.data} onEditUser={onUserEdit} onRemoveUser={onUserRemove} />
-            <Pagination count={list?.max} page={page} onChange={onChangePage} color="primary" sx={{ my: 2 }} />
+            <Box
+                display="flex"
+                justifyContent="center">
+                <Pagination count={list?.max} page={page} onChange={onChangePage} color="primary" sx={{ my: 2 }} />
+            </Box>
             <EditDialog 
                 open={showEditDialog} 
                 onClose={onCloseUserEditDialog} 

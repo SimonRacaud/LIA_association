@@ -7,7 +7,7 @@ type ShowDateProps = {
 }
 
 export default function ShowDate({ dateDayjs, date, showYear = false }: ShowDateProps) {
-  let options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'long' };
+  let options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short' };
   if (showYear) {
     options = {
       ...options,
