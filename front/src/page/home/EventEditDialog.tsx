@@ -1,7 +1,10 @@
 import { Container, Dialog, DialogTitle } from "@mui/material"
 import { AxiosError } from "axios"
 import Event from "classes/Event"
+import ErrorNotification from "components/ErrorNotification"
 import EventForm from "components/EventForm"
+import NetErrorBody from "models/ErrorResponse"
+import { useState } from "react"
 import EventService from "services/EventService"
 
 export type EventEditDialog = {
@@ -12,6 +15,7 @@ export type EventEditDialog = {
 
 export default function EventEditDialog({open, onClose, toEdit}: EventEditDialog) 
 {
+    const [ error, setError ] = useState<NetErrorBody>()
     const networkEvent = EventService.getInstance();
 
     const onSubmitForm = async (e: Event) => {
@@ -23,19 +27,26 @@ export default function EventEditDialog({open, onClose, toEdit}: EventEditDialog
                 // Update mode
                 await networkEvent.update(e)
             }
+            onClose(true)
         } catch (error) {
-            console.error("Network error:", (error as AxiosError)?.message)
-            alert("Echec")
+            const netError = error as AxiosError
+            const errReason = netError.response?.data as NetErrorBody;
+            console.error(netError.message)
+            setError(errReason)
         }
-        onClose(true)
     }
 
     return (
-        <Dialog onClose={() => onClose(true)} open={open} maxWidth='sm' fullWidth>
-            <DialogTitle>Création d'un événement</DialogTitle>
-            <Container>
-                <EventForm onSubmit={onSubmitForm} initEvent={toEdit} />
-            </Container>
-        </Dialog>
+        <Container>
+            <Dialog onClose={() => onClose(true)} open={open} maxWidth='sm' fullWidth>
+                <DialogTitle>Création d'un événement</DialogTitle>
+                <Container>
+                    <EventForm onSubmit={onSubmitForm} initEvent={toEdit} />
+                </Container>
+            </Dialog>
+            <ErrorNotification show={error != undefined} 
+                onClose={() => setError(undefined)} 
+                netError={error} />
+        </Container>
     )
 }

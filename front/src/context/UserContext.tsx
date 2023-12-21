@@ -53,7 +53,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
       setUser(undefined)
     }).catch((err: AxiosError) => {
         console.error("Network error: " + err.message)
-        alert("Erreur: êtes-vous bien connecté à internet ?")
+        alert("Erreur réseau: êtes-vous bien connecté à internet ?")
     })
   }
 

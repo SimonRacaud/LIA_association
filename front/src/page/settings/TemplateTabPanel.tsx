@@ -10,6 +10,8 @@ import TeamTemplateTable from "components/TeamTemplateTable";
 import TeamTemplateService from "services/TeamTemplateService";
 import Paginated, { PaginationQuery } from "models/Paginated";
 import { AxiosError } from "axios";
+import ErrorNotification from "components/ErrorNotification";
+import NetErrorBody, { NetFailureBody } from "models/ErrorResponse";
 
 export default function TemplateTabPanel({ tabIndex }: TabPanelProps)
 {
@@ -19,22 +21,30 @@ export default function TemplateTabPanel({ tabIndex }: TabPanelProps)
     const [ selected, setSelected ] = useState<TeamTemplate | undefined>(undefined)
     const [, forceUpdate] = useReducer(x => x + 1, 0);
     const [ list, setList ] = useState<Paginated<TeamTemplate>>()
+    const [ errorNet, setErrorNet ] = useState<NetErrorBody>()
     const [listQuery, setListQuery ] = useState<PaginationQuery>({
         page: 1,
         size: 10
     })
     const network = TeamTemplateService.getInstance();
 
-
     useEffect(() => {
         fetchList()
     }, [])
+    const handleNetError = (error: AxiosError) => {
+        const errorBody = error.response?.data as NetErrorBody
+        console.error(error.message)
+        if (errorBody) {
+            setErrorNet(NetFailureBody)
+        } else {
+            setErrorNet(errorBody)
+        }
+    }
     const fetchList = async (page?: number) => {
         try {
             setList(await network.getList(page ?? listQuery.page, listQuery.size))
-        } catch (error) {
-            console.error((error as AxiosError).message)
-            alert("Echec")
+        } catch (error: any) {
+            handleNetError(error)
         }
     }
     const onCreate = () => {
@@ -51,8 +61,6 @@ export default function TemplateTabPanel({ tabIndex }: TabPanelProps)
         setShowAlertDialog(true)
     }
     const onEditDialogSubmit = async () => {
-        setShowEditDialog(false)
-        setCreateMode(false)
         // API call
         if (selected) {
             try {
@@ -61,10 +69,11 @@ export default function TemplateTabPanel({ tabIndex }: TabPanelProps)
                 } else {
                     await network.update(selected)
                 }
-            } catch (error) {
-                console.error((error as AxiosError).message)
-                alert("Echec")
+            } catch (error: any) {
+                handleNetError(error)
             }
+            setShowEditDialog(false)
+            setCreateMode(false)
             fetchList() // Refresh list
         }
     }
@@ -79,9 +88,8 @@ export default function TemplateTabPanel({ tabIndex }: TabPanelProps)
             try {
                 await network.remove(selected.uuid)
                 fetchList() // Refresh list
-            } catch (error) {
-                console.error((error as AxiosError).message)
-                alert("Echec")
+            } catch (error: any) {
+                handleNetError(error)
             }
         }
     }
@@ -125,6 +133,10 @@ export default function TemplateTabPanel({ tabIndex }: TabPanelProps)
                 onClose={() => setShowAlertDialog(false)} 
                 onAgree={onRemoveApply}
                 question="Confirmer la suppression définitive ?" />
+            <ErrorNotification show={errorNet != undefined}
+                onClose={() => setErrorNet(undefined)}
+                netError={errorNet}
+            />
         </CustomTabPanel>
     )
 }

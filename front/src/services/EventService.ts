@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 import { NetworkService } from "./NetworkService";
 import Team from "classes/Team";
 import TeamService from "./TeamService";
-import { AxiosError } from "axios";
 
 export default class EventService extends NetworkService<Event, EventDto> {
   constructor() {
@@ -45,15 +44,10 @@ export default class EventService extends NetworkService<Event, EventDto> {
         const search = event.teams?.find((t: Team) => t.uuid === team.uuid);
 
         if (!search) {
-          try {
-            await TeamService.create({
-              event_uuid: event.uuid,
-              template_uuid: team.template.uuid,
-            });
-          } catch (error) {
-            console.error((error as AxiosError).message);
-            alert("Echec de la création de l'équipe");
-          }
+          await TeamService.create({
+            event_uuid: event.uuid,
+            template_uuid: team.template.uuid,
+          });
         }
       })
     );
@@ -66,12 +60,7 @@ export default class EventService extends NetworkService<Event, EventDto> {
           const search = data.teams.find((t: Team) => t.uuid === team.uuid);
 
           if (!search) {
-            try {
-              await TeamService.remove(team.uuid);
-            } catch (error) {
-              console.error((error as AxiosError).message);
-              alert("Echec de la suppression d'une équipe");
-            }
+            await TeamService.remove(team.uuid);
           }
         })
       );
@@ -88,15 +77,10 @@ export default class EventService extends NetworkService<Event, EventDto> {
     // create teams
     await Promise.all(
       data.teams.map(async (team) => {
-        try {
-          await TeamService.create({
-            event_uuid: event.uuid,
-            template_uuid: team.template.uuid,
-          });
-        } catch (error) {
-          console.error((error as AxiosError).message);
-          alert("Echec de la création de l'équipe");
-        }
+        await TeamService.create({
+          event_uuid: event.uuid,
+          template_uuid: team.template.uuid,
+        });
       })
     );
   }

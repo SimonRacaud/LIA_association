@@ -1,6 +1,4 @@
-import {
-  Container,
-} from "@mui/material";
+import { Container } from "@mui/material";
 import Event from "classes/Event";
 import EventShowDialog from "./EventShowDialog";
 import EventEditDialog from "./EventEditDialog";
@@ -13,6 +11,8 @@ import { AxiosError } from "axios";
 import HomeHeader from "./HomeHeader";
 import { useEffect, useState } from "react";
 import EventTable from "./EventTable";
+import ErrorNotification from "components/ErrorNotification";
+import NetErrorBody, { NetFailureBody } from "models/ErrorResponse";
 
 export default function HomePage() {
   const [selectedEvent, setSelecteEvent] = useState<Event | undefined>();
@@ -20,6 +20,7 @@ export default function HomePage() {
   const [openShowDialog, setOpenShowDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [eventList, setEventList] = useState<Paginated<Event>>();
+  const [ errorNet, setErrorNet ] = useState<NetErrorBody>()
   const [listQuery, setListQuery] = useState<PaginationQuery>({
     page: 1,
     size: 10,
@@ -42,7 +43,14 @@ export default function HomePage() {
         )
       );
     } catch (error) {
-      console.error("Network error:", (error as AxiosError).message);
+      const errorNetwork = error as AxiosError;
+      const errorBody = errorNetwork.response?.data as NetErrorBody;
+      console.error(errorNetwork.message);
+      if (errorBody) {
+        setErrorNet(NetFailureBody);
+      } else {
+        setErrorNet(errorBody);
+      }
     }
   };
   const onCloseDialog = (refresh: boolean = false) => {
@@ -51,20 +59,26 @@ export default function HomePage() {
     setSelecteEvent(undefined);
     if (refresh) loadEventList();
   };
-  const onApplyDeleteEvent = async () => {
-    setOpenAlertDialog(false);
-    if (selectedEvent) {
-      try {
-        // API call : remove event
-        await networkEvent.remove(selectedEvent.uuid);
-      } catch (error) {
-        console.error("Network error:", (error as AxiosError).message);
-        alert("Echec");
-      }
-      // Refresh list
-      loadEventList();
-    }
-  };
+    const onApplyDeleteEvent = async () => {
+        setOpenAlertDialog(false);
+        if (selectedEvent) {
+            try {
+                // API call : remove event
+                await networkEvent.remove(selectedEvent.uuid);
+            } catch (error) {
+                const errorNetwork = error as AxiosError;
+                const errorBody = errorNetwork.response?.data as NetErrorBody;
+                console.error(errorNetwork.message);
+                if (errorBody) {
+                    setErrorNet(NetFailureBody);
+                } else {
+                    setErrorNet(errorBody);
+                }
+            }
+            // Refresh list
+            loadEventList();
+        }
+    };
   const onCreateEvent = () => {
     setSelecteEvent(undefined);
     setOpenEditDialog(true);
@@ -85,7 +99,7 @@ export default function HomePage() {
         user={user}
         onClickLogout={onLogout}
       />
-    <EventTable
+      <EventTable
         user={user}
         eventList={eventList}
         listQuery={listQuery}
@@ -95,7 +109,7 @@ export default function HomePage() {
         setOpenAlertDialog={setOpenAlertDialog}
         loadEventList={loadEventList}
         setOpenShowDialog={setOpenShowDialog}
-    />
+      />
       <EventShowDialog
         open={openShowDialog}
         event={selectedEvent}
@@ -112,6 +126,10 @@ export default function HomePage() {
         onAgree={onApplyDeleteEvent}
         question="Confirmer la suppression ?"
       />
+      <ErrorNotification show={errorNet != undefined}
+            onClose={() => setErrorNet(undefined)}
+            netError={errorNet}
+        />
     </Container>
   );
 }

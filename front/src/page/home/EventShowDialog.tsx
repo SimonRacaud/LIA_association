@@ -10,6 +10,8 @@ import CardIcon from '@mui/icons-material/CalendarViewMonth'
 import { useReducer, useState } from "react";
 import TeamService from "services/TeamService";
 import { AxiosError } from "axios";
+import ErrorNotification from "components/ErrorNotification";
+import NetErrorBody, { NetFailureBody } from "models/ErrorResponse";
 
 export interface EventDialogProps {
     open: boolean
@@ -25,6 +27,7 @@ enum ViewMode {
 export default function EventShowDialog({ open, event, onClose}: EventDialogProps) {
     const { user }: UserContextType = useUser()
     const [ viewMode, setViewMode ] = useState(ViewMode.TABLE)
+    const [ errorNet, setErrorNet ] = useState<NetErrorBody>()
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     const onSubscribeEventTeam = (eventTeam: Team) => {
@@ -40,9 +43,14 @@ export default function EventShowDialog({ open, event, onClose}: EventDialogProp
                     eventTeam.members.push(user)
                     forceUpdate();
                 })
-                .catch((error) => {
-                    console.error((error as AxiosError).message)
-                    alert("Echec")
+                .catch((error: any) => {
+                    const errorBody = error.response?.data as NetErrorBody
+                    console.error(error.message)
+                    if (errorBody) {
+                        setErrorNet(NetFailureBody)
+                    } else {
+                        setErrorNet(errorBody)
+                    }
                 })
             }
         }
@@ -58,40 +66,52 @@ export default function EventShowDialog({ open, event, onClose}: EventDialogProp
                 forceUpdate();
             })
             .catch((error) => {
-                console.error((error as AxiosError).message)
-                alert("Echec")
+                const errorNetwork = error as AxiosError
+                const errorBody = errorNetwork.response?.data as NetErrorBody
+                console.error(errorNetwork.message)
+                if (errorBody) {
+                    setErrorNet(NetFailureBody)
+                } else {
+                    setErrorNet(errorBody)
+                }
             })
         }
     }
 
     return (
-        <Dialog onClose={() => onClose(false)} open={open} maxWidth="lg">
-            <DialogTitle>{event?.title}</DialogTitle>
-            <Container sx={{
-                position: 'absolute',
-                top: 5,
-                right: 0,
-                display: 'flex',
-                justifyContent: 'end'
-            }}>
-                <IconButton size='medium' onClick={() => setViewMode(ViewMode.TABLE)}>
-                    <TableIcon />
-                </IconButton>
-                <IconButton size='medium' onClick={() => setViewMode(ViewMode.CARDS)}>
-                    <CardIcon />
-                </IconButton>
-            </Container>
-            {event && 
-                (viewMode == ViewMode.CARDS &&
-                    <EventTeamCardList event={event} user={user as User} 
-                        onSubscribeTeam={onSubscribeEventTeam} 
-                        onUnsubscribeTeam={onUnsubscribeEventTeam} />
-                    ||
-                    <EventTeamTable event={event} user={user as User} 
-                        onSubscribeTeam={onSubscribeEventTeam} 
-                        onUnsubscribeTeam={onUnsubscribeEventTeam} />
-                )
-            }
-        </Dialog>
+        <Container>
+            <Dialog onClose={() => onClose(false)} open={open} maxWidth="lg">
+                <DialogTitle>{event?.title}</DialogTitle>
+                <Container sx={{
+                    position: 'absolute',
+                    top: 5,
+                    right: 0,
+                    display: 'flex',
+                    justifyContent: 'end'
+                }}>
+                    <IconButton size='medium' onClick={() => setViewMode(ViewMode.TABLE)}>
+                        <TableIcon />
+                    </IconButton>
+                    <IconButton size='medium' onClick={() => setViewMode(ViewMode.CARDS)}>
+                        <CardIcon />
+                    </IconButton>
+                </Container>
+                {event && 
+                    (viewMode == ViewMode.CARDS &&
+                        <EventTeamCardList event={event} user={user as User} 
+                            onSubscribeTeam={onSubscribeEventTeam} 
+                            onUnsubscribeTeam={onUnsubscribeEventTeam} />
+                        ||
+                        <EventTeamTable event={event} user={user as User} 
+                            onSubscribeTeam={onSubscribeEventTeam} 
+                            onUnsubscribeTeam={onUnsubscribeEventTeam} />
+                    )
+                }
+            </Dialog>
+            <ErrorNotification show={errorNet != undefined}
+                onClose={() => setErrorNet(undefined)}
+                netError={errorNet}
+            />
+        </Container>
     )
 }

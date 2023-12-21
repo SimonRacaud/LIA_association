@@ -34,8 +34,8 @@ export default class UserService {
     try {
       const res = await apiInstance.get(`/users/${id}`);
       return res.data as User;
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error(error?.message);
       return null;
     }
   };

@@ -3,17 +3,19 @@ import { CustomTabPanel, TabPanelProps } from "./Settings"
 import User from "classes/User"
 import { Button, Container, IconButton, Pagination } from "@mui/material"
 import CreateIcon from '@mui/icons-material/Add'
-import { useNavigate } from "react-router-dom"
 import EditDialog from "components/EditDialog"
 import { useEffect, useReducer, useState } from "react"
 import UserForm from "components/UserForm"
 import AlertDialog from "components/AlertDialog"
 import UserService from "services/UserService"
 import Paginated from "models/Paginated"
+import ErrorNotification from "components/ErrorNotification"
+import NetErrorBody, { NetFailureBody } from "models/ErrorResponse"
+import { AxiosError } from "axios"
 
 export default function UserTabPanel({ tabIndex }: TabPanelProps)
 {
-    const navigate = useNavigate()
+    const [ errorNet, setErrorNet ] = useState<NetErrorBody>()
     const [ showEditDialog, setShowEditDialog ] = useState(false)
     const [ showAlertDialog, setShowAlertDialog ] = useState(false)
     const [ selectedUser, setSelectedUser ] = useState<User | undefined>(undefined)
@@ -26,13 +28,22 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
         loadUserList();
     }, [])
 
+    const handleNetError = (error: AxiosError) => {
+        const errorBody = error?.response?.data as NetErrorBody
+        console.error(error?.message)
+        if (errorBody) {
+            setErrorNet(NetFailureBody)
+        } else {
+            setErrorNet(errorBody)
+        }
+    }
     const loadUserList = (p?: number) => {
         UserService.getUsers(p ?? page, listSize)
         .then((paginated) => {
             setList(paginated)
         })
-        .catch((error) => {
-            console.error("Network: ", error.message)
+        .catch((error: any) => {
+            handleNetError(error)
             setList(undefined)
         })
     }
@@ -41,29 +52,28 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
         setSelectedUser(_getUserFromUuid(uuid))
         setShowEditDialog(true)
     }
-    const onUserEditSubmit = () => {
+    
+    const onUserEditSubmit = async () => {
         if (selectedUser) {
             // API call
             if (selectedUser.id != '') { 
-                // New user created:
-                UserService.updateUser(selectedUser)
-                .catch((error) => {
-                    console.error("Network: ", error.message)
-                    alert("Echec de la mise à jour de l'utilisateur")
-                })
+                try {
+                    // New user created:
+                    await UserService.updateUser(selectedUser)
+                } catch(error: any) {
+                    handleNetError(error)
+                }
             } else {
-                // Editing existing user:
-                UserService.createUser(selectedUser)
-                .catch((error) => {
-                    console.error("Network: ", error.message)
-                    alert("Echec de la création de l'utilisateur")
-                })
-                .then(() => {
+                try {
+                    // Editing existing user:
+                    await UserService.createUser(selectedUser)
                     loadUserList() // refresh list
-                })
+                } catch(error: any) {
+                    handleNetError(error)
+                }
             }
+            setShowEditDialog(false)
         }
-        setShowEditDialog(false)
     }
     const onCloseUserEditDialog = () => {
         setShowEditDialog(false)
@@ -72,18 +82,16 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
         setSelectedUser(_getUserFromUuid(uuid))
         setShowAlertDialog(true)
     }
-    const applyUserRemoval = () => {
+    const applyUserRemoval = async () => {
         // Send remove Request to API
         if (selectedUser) {
-            UserService.removeUser(selectedUser.id)
-            .catch((error) => {
-                console.error("Network: ", error.message)
-                alert("Echec de la suppression de l'utilisateur")
-            })
-            .then(() => {
+            try {
+                await UserService.removeUser(selectedUser.id)
                 // Refresh user list
                 loadUserList();
-            })
+            } catch(error: any) {
+                handleNetError(error)
+            }
         }
     }
     const onUserCreate = () => {
@@ -131,6 +139,10 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
                     applyUserRemoval()
                 }}
                 question="Confirmer la suppression définitive ?" />
+            <ErrorNotification show={errorNet != undefined}
+                onClose={() => setErrorNet(undefined)}
+                netError={errorNet}
+            />
         </CustomTabPanel>
     )
 }

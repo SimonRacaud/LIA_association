@@ -10,6 +10,8 @@ import TeamForm from "./TeamForm";
 import Paginated, { PaginationQuery } from "models/Paginated";
 import TeamTemplateService from "services/TeamTemplateService";
 import { AxiosError } from "axios";
+import ErrorNotification from "./ErrorNotification";
+import NetErrorBody, { NetFailureBody } from "models/ErrorResponse";
 
 
 type EventFormProps = {
@@ -21,8 +23,8 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
     const [ event, setEvent ] = useState(initEvent ?? new Event())
     const [ newTeamTemplate, setNewTeamTemplate ] = useState(0);
     const [, forceUpdate] = useReducer(x => x + 1, 0);
-    const [ showError, setShowError ] = useState(false)
-    const [ error, setError ] = useState("")
+    const [ errorMsg, setErrorMsg ] = useState<string>()
+    const [ errorNet, setErrorNet ] = useState<NetErrorBody>()
     const [ list, setList ] = useState<Paginated<TeamTemplate>>()
     const [ listQuery, setListQuery ] = useState<PaginationQuery>({
         page: 1,
@@ -38,8 +40,14 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
         try {
             setList(await network.getList(listQuery.page, listQuery.size));
         } catch (error) {
+            const netError = error as AxiosError
+            const errorBody = netError.response?.data as NetErrorBody
             console.error((error as AxiosError).message);
-            alert("Echec")
+            if (errorBody != undefined) {
+                setErrorNet(errorBody)
+            } else {
+                setErrorNet(NetFailureBody)
+            }
         }
     }
     const handleChangeNewTeamTemplate = (event: SelectChangeEvent) => {
@@ -55,8 +63,7 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
                 setEvent(e)
                 forceUpdate()
             } else {
-                setError("L'équipe existe déjà dans l'évènement")
-                setShowError(true)
+                setErrorMsg("L'équipe existe déjà dans l'évènement")
             }
         }
     }
@@ -64,7 +71,8 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
         onSubmit(event)
     }
     const handleCloseError = () =>  {
-        setShowError(false)
+        setErrorMsg(undefined)
+        setErrorNet(undefined)
     }
     const removeTeamTemplate = (uuid: string) => () => {
         event.teams = event.teams.filter((v) => v.template.uuid != uuid)
@@ -138,11 +146,11 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
                 </Button>
             </Container>
             {/* Error notification: */}
-            <Snackbar open={showError} autoHideDuration={3000} onClose={handleCloseError}>
-                <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
-                {error}
-                </Alert>
-            </Snackbar>
+            <ErrorNotification show={(errorMsg != undefined || errorNet != undefined)} 
+                onClose={handleCloseError} 
+                message={errorMsg} 
+                netError={errorNet}
+            />
         </Stack>
 
     )

@@ -51,8 +51,8 @@ export default class NetworkCoreService<T extends IDataModel> {
     try {
       const res = await apiInstance.get(`${this.endpoint}/${id}`);
       return res.data as T;
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error(error?.message);
       return null;
     }
   }
