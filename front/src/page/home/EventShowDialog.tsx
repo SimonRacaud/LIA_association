@@ -1,4 +1,4 @@
-import { Container, Dialog, DialogTitle, IconButton } from "@mui/material";
+import { Box, Container, Dialog, DialogTitle, IconButton } from "@mui/material";
 import Event from "classes/Event";
 import Team from "classes/Team";
 import User from "classes/User";
@@ -7,7 +7,8 @@ import EventTeamTable from "components/EventTeamTable";
 import { UserContextType, useUser } from "context/UserContext";
 import TableIcon from '@mui/icons-material/ViewList'
 import CardIcon from '@mui/icons-material/CalendarViewMonth'
-import { useReducer, useState } from "react";
+import QuitIcon from '@mui/icons-material/Close'
+import { useEffect, useReducer, useState } from "react";
 import TeamService from "services/TeamService";
 import { AxiosError } from "axios";
 import ErrorNotification from "components/ErrorNotification";
@@ -26,9 +27,19 @@ enum ViewMode {
 
 export default function EventShowDialog({ open, event, onClose}: EventDialogProps) {
     const { user }: UserContextType = useUser()
-    const [ viewMode, setViewMode ] = useState(ViewMode.TABLE)
     const [ errorNet, setErrorNet ] = useState<NetErrorBody>()
     const [, forceUpdate] = useReducer(x => x + 1, 0);
+    const [width, setWidth] = useState<number>(window.innerWidth);
+    const isMobile: boolean = width <= 768;
+    const [ viewMode, setViewMode ] = useState(isMobile? ViewMode.CARDS : ViewMode.TABLE)
+
+    const handleWindowSizeChange = () => setWidth(window.innerWidth);
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, []);
 
     const onSubscribeEventTeam = (eventTeam: Team) => {
         const userId = user?.id
@@ -80,22 +91,25 @@ export default function EventShowDialog({ open, event, onClose}: EventDialogProp
 
     return (
         <Container>
-            <Dialog onClose={() => onClose(false)} open={open} maxWidth="lg">
-                <DialogTitle>{event?.title}</DialogTitle>
-                <Container sx={{
-                    position: 'absolute',
-                    top: 5,
-                    right: 0,
+            <Dialog onClose={() => onClose(false)} open={open} maxWidth="lg" fullScreen={isMobile}>
+                <Box sx={{
                     display: 'flex',
-                    justifyContent: 'end'
                 }}>
-                    <IconButton size='medium' onClick={() => setViewMode(ViewMode.TABLE)}>
-                        <TableIcon />
-                    </IconButton>
-                    <IconButton size='medium' onClick={() => setViewMode(ViewMode.CARDS)}>
-                        <CardIcon />
-                    </IconButton>
-                </Container>
+                    {isMobile &&
+                        <IconButton size='medium' onClick={() => onClose(false)}>
+                            <QuitIcon />
+                        </IconButton>
+                    }
+                    <Container sx={{ display:'flex', justifyContent:'end'}}>
+                        <IconButton size='medium' onClick={() => setViewMode(ViewMode.TABLE)}>
+                            <TableIcon />
+                        </IconButton>
+                        <IconButton size='medium' onClick={() => setViewMode(ViewMode.CARDS)}>
+                            <CardIcon />
+                        </IconButton>
+                    </Container>
+                </Box>
+                <DialogTitle sx={{ pt: 1 }}>{event?.title}</DialogTitle>
                 {event && 
                     (viewMode == ViewMode.CARDS &&
                         <EventTeamCardList event={event} user={user as User} 

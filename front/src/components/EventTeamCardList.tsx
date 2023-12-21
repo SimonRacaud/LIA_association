@@ -26,7 +26,6 @@ function EventTeam({team, user, onSubscribeTeam, onUnsubscribeTeam}: EventTeamPr
         <Card key={team.template.title} sx={{ 
             width: 360, 
             m: 1,
-            height: 350,
             overflowY: 'auto',
             }}>
             <CardContent sx={{
