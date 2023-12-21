@@ -1,6 +1,7 @@
-import { Container, Dialog, DialogTitle } from "@mui/material"
+import { Container } from "@mui/material"
 import { AxiosError } from "axios"
 import Event from "classes/Event"
+import EditDialog from "components/EditDialog"
 import ErrorNotification from "components/ErrorNotification"
 import EventForm from "components/EventForm"
 import NetErrorBody from "models/ErrorResponse"
@@ -38,12 +39,12 @@ export default function EventEditDialog({open, onClose, toEdit}: EventEditDialog
 
     return (
         <Container>
-            <Dialog onClose={() => onClose(true)} open={open} maxWidth='sm' fullWidth>
-                <DialogTitle>Création d'un événement</DialogTitle>
-                <Container>
+            <EditDialog open={open} onClose={() => onClose(true)} maxWidth="sm" 
+                title="Création d'un événement">
+                <Container sx={{ p: 0 }}>
                     <EventForm onSubmit={onSubmitForm} initEvent={toEdit} />
                 </Container>
-            </Dialog>
+            </EditDialog>
             <ErrorNotification show={error != undefined} 
                 onClose={() => setError(undefined)} 
                 netError={error} />
