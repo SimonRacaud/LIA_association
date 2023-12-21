@@ -15,10 +15,10 @@ function TeamTemplateTableRow({ template, onEdit, onRemove }: EventTeamTableRowP
             <TableCell>{template.note}</TableCell>
             <TableCell>{template.maxMember}</TableCell>
             <TableCell align='right'>
-               <Button onClick={() => onEdit(template.uuid)}>Modifier</Button>
+               <Button variant="outlined" onClick={() => onEdit(template.uuid)}>Éditer</Button>
             </TableCell>
             <TableCell align='right'>
-                <Button onClick={() => onRemove(template.uuid)}>Supprimer</Button>
+                <Button variant="outlined" onClick={() => onRemove(template.uuid)}>Supprimer</Button>
             </TableCell>
         </TableRow>
     )

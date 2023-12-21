@@ -14,10 +14,12 @@ export default function TeamForm({ team, setTeam }: TeamFormProps)
     const updateTeamTemplate = (template: TeamTemplate, update: boolean) => {
         team.template = template
         setTeam(team, update)
+        // TODO : API CALL ?
     }
     const onRemoveUser = (uuid: string) => {
         team.members = team.members.filter((user) => user.id != uuid)
         setTeam(team, true)
+        // TODO : API CALL
     }
 
     return (

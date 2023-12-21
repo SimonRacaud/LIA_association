@@ -109,7 +109,7 @@ export default function EventShowDialog({ open, event, onClose}: EventDialogProp
                         </IconButton>
                     </Container>
                 </Box>
-                <DialogTitle sx={{ pt: 1 }}>{event?.title}</DialogTitle>
+                <DialogTitle sx={{ pt: 1 }}>Équipes de {event?.title}</DialogTitle>
                 {event && 
                     (viewMode == ViewMode.CARDS &&
                         <EventTeamCardList event={event} user={user as User} 
