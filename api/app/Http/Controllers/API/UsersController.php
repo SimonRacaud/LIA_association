@@ -30,7 +30,7 @@ class UsersController extends BaseController
                 User::count(),
             );
         } catch (\Exception $exception) {
-            return $this->sendError("Failure", [$exception->getMessage()], 500);
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
         }
     }
 
@@ -43,12 +43,12 @@ class UsersController extends BaseController
             $user = User::find($id);
 
             if (is_null($user)) {
-                return $this->sendError('User not found');
+                return $this->sendError(ErrorMessage::NOT_FOUND, "User not found", 404);
             }
 
             return $this->sendResponse(new UserResource($user));
         } catch (\Exception $exception) {
-            return $this->sendError("Failure", [$exception->getMessage()], 500);
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
         }
     }
 
@@ -73,11 +73,11 @@ class UsersController extends BaseController
 
             return $this->sendResponse(new UserResource($user));
         } catch (ValidationException $exception) {
-            return $this->sendError('Validation Error.', $exception->errors(), 400);
+            return $this->sendError(ErrorMessage::VALIDATION_ERR, $exception->getMessage(), 400);
         } catch (ModelNotFoundException $exception) {
-            return $this->sendError("Not found", [], 404);
+            return $this->sendError(ErrorMessage::NOT_FOUND, $exception->getMessage(), 404);
         } catch (\Exception $exception) {
-            return $this->sendError("Failure", [$exception->getMessage()], 500);
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
         }
     }
 
@@ -91,9 +91,9 @@ class UsersController extends BaseController
 
             return response()->json(null, 204);
         } catch (ModelNotFoundException $exception) {
-            return $this->sendError("Not found", [], 404);
+            return $this->sendError(ErrorMessage::NOT_FOUND, $exception->getMessage(), 404);
         } catch (\Exception $exception) {
-            return $this->sendError("Failure", [$exception->getMessage()], 500);
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
         }
     }
 }

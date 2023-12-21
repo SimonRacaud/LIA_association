@@ -36,7 +36,7 @@ class RegisterController extends BaseController
 
             return $this->sendResponse($success);
         } catch (ValidationException $exception) {
-            return $this->sendError('Validation Error.', $exception->errors(), 400);
+            return $this->sendError(ErrorMessage::VALIDATION_ERR, $exception->getMessage(), 400);
         }
     }
 
@@ -54,8 +54,8 @@ class RegisterController extends BaseController
             $success['role'] =  $user->role;
 
             return $this->sendResponse($success);
-        } else{
-            return $this->sendError('Unauthorised.', ['error'=>'Unauthorised'], 401);
+        } else {
+            return $this->sendError(ErrorMessage::DENIED, 'Unauthorised', 401);
         }
     }
 

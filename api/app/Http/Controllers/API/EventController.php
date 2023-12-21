@@ -28,7 +28,7 @@ class EventController extends BaseController
                 Event::count(),
             );
         } catch (\Exception $exception) {
-            return $this->sendError("Failure", [$exception->getMessage()], 500);
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
         }
     }
 
@@ -48,9 +48,9 @@ class EventController extends BaseController
 
             return $this->sendResponse(new EventResource($result));
         } catch (ValidationException $exception) {
-            return $this->sendError('Validation error. ', $exception->errors(), 400);
+            return $this->sendError(ErrorMessage::VALIDATION_ERR, $exception->getMessage(), 400);
         } catch (\Exception $exception) {
-            return $this->sendError("Failure", [$exception->getMessage()], 500);
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
         }
     }
 
@@ -62,11 +62,11 @@ class EventController extends BaseController
         try {
             $data = Event::find($uuid);
             if (is_null($data)) {
-                return $this->sendError('Event not found');
+                return $this->sendError(ErrorMessage::NOT_FOUND);
             }
             return $this->sendResponse(new EventResource($data));
         } catch (\Exception $exception) {
-            return $this->sendError("Failure", [$exception->getMessage()], 500);
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
         }
     }
 
@@ -86,11 +86,11 @@ class EventController extends BaseController
             $data->update($newData);
             return $this->sendResponse(new EventResource($data));
         } catch (ValidationException $exception) {
-            return $this->sendError('Validation error. ', $exception->errors(), 400);
+            return $this->sendError(ErrorMessage::VALIDATION_ERR, $exception->errors(), 400);
         } catch (ModelNotFoundException $e) {
-            return $this->sendError("Not found", [], 404);
+            return $this->sendError(ErrorMessage::NOT_FOUND, "", 404);
         } catch (\Exception $exception) {
-            return $this->sendError("Failure", [$exception->getMessage()], 500);
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
         }
     }
 
@@ -104,9 +104,9 @@ class EventController extends BaseController
 
             return response()->json(null, 204);
         } catch (ModelNotFoundException $e) {
-            return $this->sendError("Not found", [], 404);
+            return $this->sendError(ErrorMessage::NOT_FOUND, "", 404);
         } catch (\Exception $exception) {
-            return $this->sendError("Failure", [$exception->getMessage()], 500);
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
         }
     }
 }

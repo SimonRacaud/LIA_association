@@ -41,9 +41,9 @@ class TeamTemplateController extends BaseController
 
             return $this->sendResponse(new TeamTemplateResource($result));
         } catch (ValidationException $exception) {
-            return $this->sendError('Validation error. ', $exception->errors(), 400);
+            return $this->sendError(ErrorMessage::VALIDATION_ERR, $exception->getMessage(), 400);
         } catch (\Exception $exception) {
-            return $this->sendError("Failure", [$exception->getMessage()], 500);
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
         }
     }
 
@@ -55,11 +55,11 @@ class TeamTemplateController extends BaseController
         try {
             $data = TeamTemplate::find($uuid);
             if (is_null($data)) {
-                return $this->sendError('Template not found');
+                return $this->sendError(ErrorMessage::NOT_FOUND, "Template not found", 404);
             }
             return $this->sendResponse(new TeamTemplateResource($data));
         } catch (\Exception $exception) {
-            return $this->sendError("Failure", [$exception->getMessage()], 500);
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
         }
     }
 
@@ -74,11 +74,11 @@ class TeamTemplateController extends BaseController
             $data->update($newData);
             return $this->sendResponse(new TeamTemplateResource($data));
         } catch (ValidationException $exception) {
-            return $this->sendError('Validation error. ', $exception->errors(), 400);
+            return $this->sendError(ErrorMessage::VALIDATION_ERR, $exception->getMessage(), 400);
         } catch (ModelNotFoundException $e) {
-            return $this->sendError("Not found", [], 404);
+            return $this->sendError(ErrorMessage::NOT_FOUND, $e->getMessage(), 404);
         } catch (\Exception $exception) {
-            return $this->sendError("Failure", [$exception->getMessage()], 500);
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
         }
     }
 
@@ -92,9 +92,9 @@ class TeamTemplateController extends BaseController
 
             return response()->json(null, 204);
         } catch (ModelNotFoundException $e) {
-            return $this->sendError("Not found", [], 404);
+            return $this->sendError(ErrorMessage::NOT_FOUND, $e->getMessage(), 404);
         } catch (\Exception $exception) {
-            return $this->sendError("Failure", [$exception->getMessage()], 500);
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
         }
     }
 }
