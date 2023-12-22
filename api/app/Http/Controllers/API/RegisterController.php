@@ -11,11 +11,12 @@ use Illuminate\Http\JsonResponse;
 
 class RegisterController extends BaseController
 {
-    const APP_NAME = 'LIA_planning';
+    private string $APP_NAME;
 
     public function __construct(
         protected User $repository,
     ) {
+        $this->APP_NAME = env("APP_NAME");
     }
 
     /**
@@ -31,7 +32,7 @@ class RegisterController extends BaseController
             $input = $validated;
             $input['password'] = bcrypt($input['password']);
             $user = User::create($input);
-            $success['token'] =  $user->createToken(self::APP_NAME)->plainTextToken;
+            $success['token'] =  $user->createToken($this->APP_NAME)->plainTextToken;
             $success['username'] =  $user->username;
 
             return $this->sendResponse($success);
@@ -49,7 +50,7 @@ class RegisterController extends BaseController
     {
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password])){
             $user = Auth::user();
-            $success['token'] =  $user->createToken(self::APP_NAME)->plainTextToken;
+            $success['token'] =  $user->createToken($this->APP_NAME)->plainTextToken;
             $success['username'] =  $user->username;
             $success['role'] =  $user->role;
 
