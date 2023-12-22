@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
 
 class RegisterController extends BaseController
 {
@@ -69,7 +71,12 @@ class RegisterController extends BaseController
         $request->user('sanctum')->tokens()->delete();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+        $cookieName = env('SESSION_COOKIE',
+            Str::slug($this->APP_NAME, '_').'_session');
+        $cookie = Cookie::forget($cookieName);
 
-        return $this->sendResponse(['message' => 'success']);
+        return response()
+            ->json(['message' => 'logged out'], 200)
+            ->withCookie($cookie);
     }
 }
