@@ -69,14 +69,8 @@ class RegisterController extends BaseController
     public function logout(Request $request): JsonResponse
     {
         $request->user('sanctum')->tokens()->delete();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        $cookieName = env('SESSION_COOKIE',
-            Str::slug($this->APP_NAME, '_').'_session');
-        $cookie = Cookie::forget($cookieName);
 
         return response()
-            ->json(['message' => 'logged out'], 200)
-            ->withCookie($cookie);
+            ->json(['message' => 'logged out'], 200);
     }
 }
