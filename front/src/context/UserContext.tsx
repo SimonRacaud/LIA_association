@@ -3,6 +3,7 @@ import User, { UserType } from 'classes/User'
 import { AuthService } from 'services/AuthService'
 import { AxiosError } from 'axios'
 import LoginReponse from 'models/LoginResponse'
+import Cookie from './Cookie'
 
 export type UserContextType = {
   user?: User
@@ -42,6 +43,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
   const loginUser = async (username: string, password: string): Promise<boolean> => {
     const response: LoginReponse = await AuthService.loginUser(username, password);
 
+    Cookie.createAuthCookie(response.token)
     return true
   }
 

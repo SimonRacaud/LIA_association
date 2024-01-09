@@ -14,6 +14,7 @@ import LiaLogo from '../../components/LiaLogo';
 import { useUser } from 'context/UserContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Alert } from '@mui/material';
+import { AxiosError } from 'axios';
 
 export default function SignIn() {
     const {loginUser, isLogged } = useUser()
@@ -57,7 +58,8 @@ export default function SignIn() {
             }
         })
         .catch((error) => {
-            if (error.response != null && error.response.status === 401) {
+            if (error instanceof AxiosError
+                    && error.response != null && error.response.status === 401) {
                 setError(true)
                 setErrorMessage("Nom d'utilisateur ou mot de passe incorrect")
             } else {

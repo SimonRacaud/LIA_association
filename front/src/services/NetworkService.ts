@@ -1,4 +1,3 @@
-import { AxiosRequestConfig } from "axios";
 import { apiInstance } from "./apiInstance";
 import Paginated from "models/Paginated";
 import IDataModel from "models/IModel";
@@ -41,9 +40,7 @@ export default class NetworkCoreService<T extends IDataModel> {
       page,
     };
 
-    const res = await apiInstance.get(this.endpoint, {
-      params: params,
-    });
+    const res = await apiInstance.get(this.endpoint, params);
     return res.data;
   }
 

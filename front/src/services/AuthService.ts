@@ -1,7 +1,8 @@
 import { apiInstance } from './apiInstance'
 import User, { UserType, userTypeToString } from 'classes/User'
-import { AxiosError, AxiosRequestConfig } from 'axios'
+import { AxiosError } from 'axios'
 import LoginReponse from 'models/LoginResponse'
+import Cookie from 'context/Cookie'
 
 export class AuthService {
   /**
@@ -14,20 +15,12 @@ export class AuthService {
     username: string,
     password: string
   ): Promise<LoginReponse> {
-    const reqConfig: AxiosRequestConfig<{}> = {
-      headers : {
-        "Content-Type" : "application/json"
-      },
-      withCredentials: true,
-    }
-
     const response = await apiInstance.post(
       '/login',
       {
         username,
         password,
-      },
-      reqConfig
+      }
     )
     return new LoginReponse(response.data)
   }
@@ -44,13 +37,6 @@ export class AuthService {
     role: UserType,
     email: string
   ): Promise<void> {
-    const reqConfig: AxiosRequestConfig<{}> = {
-      headers : {
-        "Content-Type" : "application/json"
-      },
-      withCredentials: true,
-    }
-
     await apiInstance.post(
       '/login',
       {
@@ -58,19 +44,15 @@ export class AuthService {
         password,
         email,
         role: userTypeToString(role)
-      },
-      reqConfig
+      }
     )
   }
   /**
    * Invalidate current auth token
    */
   public static async logoutUser(): Promise<void> {
-    const reqConfig: AxiosRequestConfig<{}> = {
-      withCredentials: true,
-    }
-
-    await apiInstance.post('/logout', {}, reqConfig)
+    await apiInstance.post('/logout', {})
+    Cookie.removeAuthCookie()
   }
   /**
    * Fetch currently logged user's informations
@@ -78,15 +60,8 @@ export class AuthService {
    * @returns 
    */
   public static async getAuthentifiedUser(): Promise<User | null> {
-    const reqConfig: AxiosRequestConfig<{}> = {
-      headers : {
-        "Content-Type" : "application/json"
-      },
-      withCredentials: true,
-    }
-
     try {
-      const res = await apiInstance.get('/user/me', reqConfig)
+      const res = await apiInstance.get('/user/me')
       return res.data.data as User
     } catch (error) {
       console.error("Network error: " + (error as AxiosError).message)

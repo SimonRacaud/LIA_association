@@ -21,12 +21,7 @@ export default class UserService {
       page,
     };
 
-    const res = await apiInstance.get("/users/", {
-      params: params,
-      headers: {
-        //'Cache-Control': 'no-cache',
-      },
-    });
+    const res = await apiInstance.get("/users/", params);
     return res.data;
   };
 
@@ -41,11 +36,7 @@ export default class UserService {
   };
 
   public static updateUser = async (user: User): Promise<void> => {
-    const reqConfig: AxiosRequestConfig<{}> = {
-      withCredentials: true,
-    };
-
-    await apiInstance.put(`/users/${user.id}`, user, reqConfig);
+    await apiInstance.put(`/users/${user.id}`, user);
   };
 
   public static updatePassword = async (
