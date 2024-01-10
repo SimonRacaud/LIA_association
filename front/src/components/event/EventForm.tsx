@@ -6,11 +6,11 @@ import TeamTemplate, { TeamType } from "classes/TeamTemplate";
 import { useEffect, useReducer, useState } from "react";
 import Team from "classes/Team";
 import RemoveIcon from '@mui/icons-material/Delete';
-import TeamForm from "./TeamForm";
+import TeamForm from "../TeamForm";
 import Paginated, { PaginationQuery } from "models/Paginated";
 import TeamTemplateService from "services/TeamTemplateService";
 import { AxiosError } from "axios";
-import ErrorNotification from "./ErrorNotification";
+import ErrorNotification from "../ErrorNotification";
 import NetErrorBody, { NetFailureBody } from "models/ErrorResponse";
 
 

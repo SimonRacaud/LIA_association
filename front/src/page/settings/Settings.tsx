@@ -4,38 +4,7 @@ import UserTabPanel from "./UserTabPanel";
 import BackIcon from '@mui/icons-material/Home'
 import { useNavigate } from "react-router-dom";
 import TemplateTabPanel from "./TemplateTabPanel";
-
-function a11yProps(index: number) {
-    return {
-      id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
-    };
-}
-
-export interface CustomTabPanelProps {
-    children?: React.ReactNode;
-    index: number;
-    value: number;
-  }
-export function CustomTabPanel(props: CustomTabPanelProps) {
-    const { children, value, index, ...other } = props;
-
-    return (
-        <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        {...other}
-        >
-        {value === index && (
-            <Box sx={{ p: 2 }}>
-                {children}
-            </Box>
-        )}
-        </div>
-    );
-}
+import { tabPanelA11yProps } from "components/CustomTabPanel";
 
 export type TabPanelProps = {
     tabIndex: number
@@ -62,8 +31,8 @@ export default function Settings()
                 <Typography variant="h4" sx={{ my: 2 }}>Paramètres d'administration</Typography>
             </Container>
             <Tabs value={tabIndex} onChange={handleChange} aria-label="basic tabs example">
-                <Tab label="Utilisateurs" {...a11yProps(0)} />
-                <Tab label="Modèles d'équipe" {...a11yProps(1)} />
+                <Tab label="Utilisateurs" {...tabPanelA11yProps(0)} />
+                <Tab label="Modèles d'équipe" {...tabPanelA11yProps(1)} />
             </Tabs>
             <UserTabPanel tabIndex={tabIndex} />
             <TemplateTabPanel tabIndex={tabIndex} />

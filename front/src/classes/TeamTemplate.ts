@@ -6,7 +6,14 @@ export enum TeamType {
 }
 
 export const teamTypeToString = (teamType: TeamType): string => {
-    return TeamType[teamType];
+    switch (teamType) {
+        case TeamType.RAMASSAGE:
+            return "Ramassage"
+        case TeamType.DISTRIB:
+            return "Distribution"
+        default:
+            return "?"
+    }
 };
 
 export const teamTypeOptions = [ TeamType.RAMASSAGE, TeamType.DISTRIB ]

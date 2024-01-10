@@ -3,7 +3,7 @@ import User, { UserType } from "classes/User";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CreateIcon from "@mui/icons-material/Add";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Item } from "components/EventTeamCardList";
+import { Item } from "components/event/EventTeamCardList";
 
 export type HomeHeaderProps = {
   onClickSettings: () => void;

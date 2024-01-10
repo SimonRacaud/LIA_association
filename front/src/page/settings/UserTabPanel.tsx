@@ -1,5 +1,5 @@
 import UserTable from "components/UserTable"
-import { CustomTabPanel, TabPanelProps } from "./Settings"
+import { TabPanelProps } from "./Settings"
 import User from "classes/User"
 import { Box, Button, Container, IconButton, Pagination } from "@mui/material"
 import CreateIcon from '@mui/icons-material/Add'
@@ -12,6 +12,7 @@ import Paginated from "models/Paginated"
 import ErrorNotification from "components/ErrorNotification"
 import NetErrorBody, { NetFailureBody } from "models/ErrorResponse"
 import { AxiosError } from "axios"
+import { CustomTabPanel } from "components/CustomTabPanel"
 
 export default function UserTabPanel({ tabIndex }: TabPanelProps)
 {

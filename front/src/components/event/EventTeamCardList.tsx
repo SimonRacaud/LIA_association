@@ -35,11 +35,8 @@ function EventTeam({team, user, onSubscribeTeam, onUnsubscribeTeam}: EventTeamPr
                 p: 1,
                 m: 0,
             }}>
-                <Typography gutterBottom variant="h6" component="div" sx={{ mb: 2, minHeight: 60 }} >
+                <Typography gutterBottom variant="h6" component="div" sx={{ mb: 2 }} >
                    {team.template.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" component="div">
-                    {teamTypeToString(team.template.type)}
                 </Typography>
                 <Typography variant="body2" sx={{ my: 1 }} component="div">
                     Notes: {team.template.note}
@@ -69,12 +66,12 @@ function EventTeam({team, user, onSubscribeTeam, onUnsubscribeTeam}: EventTeamPr
 }
 
 type EventTeamCardListProps = {
-    event: Event
+    teams: Team[]
     user: User
     onSubscribeTeam: (t: Team) => void
     onUnsubscribeTeam: (t: Team) => void
 }
-export default function EventTeamCardList({ event, user, onSubscribeTeam, onUnsubscribeTeam }: EventTeamCardListProps)
+export default function EventTeamCardList({ teams, user, onSubscribeTeam, onUnsubscribeTeam }: EventTeamCardListProps)
 {
 
     return (
@@ -83,7 +80,7 @@ export default function EventTeamCardList({ event, user, onSubscribeTeam, onUnsu
             flexDirection: 'row',
             flexWrap: 'wrap',
         }}>
-            {event?.teams.map((team) => {
+            {teams.map((team: Team) => {
                 return <EventTeam key={team.uuid} team={team} user={user} onSubscribeTeam={onSubscribeTeam} onUnsubscribeTeam={onUnsubscribeTeam} />
             })}
         </Container>

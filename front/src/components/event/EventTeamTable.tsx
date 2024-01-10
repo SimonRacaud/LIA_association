@@ -20,7 +20,6 @@ function EventTeamTableRow({team, user, onSubscribeTeam, onUnsubscribeTeam}: Eve
     return (
         <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell>{team.template.title}</TableCell>
-            <TableCell>{teamTypeToString(team.template.type)}</TableCell>
             <TableCell>{nbFreePlace}</TableCell>
             <TableCell>
                 <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
@@ -46,21 +45,20 @@ function EventTeamTableRow({team, user, onSubscribeTeam, onUnsubscribeTeam}: Eve
 
 
 type EventTeamTableProps = {
-    event: Event
+    teams: Team[]
     user: User
     onSubscribeTeam: (t: Team) => void
     onUnsubscribeTeam: (t: Team) => void
 }
-export default function EventTeamTable({event, user, onSubscribeTeam, onUnsubscribeTeam}: EventTeamTableProps)
+export default function EventTeamTable({teams, user, onSubscribeTeam, onUnsubscribeTeam}: EventTeamTableProps)
 {
 
     return (
         <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 500 }}>
+            <Table sx={{ minWidth: 450 }}>
                 <TableHead>
                     <TableRow>
                         <TableCell>Titre</TableCell>
-                        <TableCell>Type</TableCell>
                         <TableCell>Places disponibles</TableCell>
                         <TableCell>Participants</TableCell>
                         <TableCell>Memo</TableCell>
@@ -68,7 +66,7 @@ export default function EventTeamTable({event, user, onSubscribeTeam, onUnsubscr
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                {event.teams.map((team) => (
+                {teams.map((team: Team) => (
                     <EventTeamTableRow key={team.uuid} team={team} user={user} 
                         onSubscribeTeam={onSubscribeTeam} 
                         onUnsubscribeTeam={onUnsubscribeTeam} />

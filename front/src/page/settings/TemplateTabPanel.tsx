@@ -1,5 +1,5 @@
 import { Box, Button, Container, IconButton, Pagination } from "@mui/material";
-import { CustomTabPanel, TabPanelProps } from "./Settings";
+import { TabPanelProps } from "./Settings";
 import CreateIcon from '@mui/icons-material/Add'
 import EditDialog from "components/EditDialog";
 import { useEffect, useReducer, useState } from "react";
@@ -12,6 +12,7 @@ import Paginated, { PaginationQuery } from "models/Paginated";
 import { AxiosError } from "axios";
 import ErrorNotification from "components/ErrorNotification";
 import NetErrorBody, { NetFailureBody } from "models/ErrorResponse";
+import { CustomTabPanel } from "components/CustomTabPanel";
 
 export default function TemplateTabPanel({ tabIndex }: TabPanelProps)
 {

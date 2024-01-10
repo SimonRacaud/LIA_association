@@ -59,7 +59,7 @@ export default function TeamTemplateForm({template, setTemplate, lock}: TeamTemp
                 >
                     {teamTypeOptions.map((option) => {
                         return (                   
-                            <MenuItem key={option} value={option}>{teamTypeToString(option)}</MenuItem>
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
                         )
                     })}
                 </Select>
