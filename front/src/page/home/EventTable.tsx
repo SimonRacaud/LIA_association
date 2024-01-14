@@ -13,7 +13,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import Event from "classes/Event";
+import Event, { getTeamsFreePlaces } from "classes/Event";
 import User, { UserType } from "classes/User";
 import ShowDate from "components/ShowDate";
 import Paginated, { PaginationQuery } from "models/Paginated";
@@ -100,7 +100,7 @@ export default function EventTable({
               <TableCell>
                 <Stack spacing={1} direction="row">
                   <Typography sx={{ mr: 1 }}>
-                    {event.getTeamsFreePlaces()}
+                    {getTeamsFreePlaces(event.teams)}
                   </Typography>
                   <GroupIcon />
                 </Stack>

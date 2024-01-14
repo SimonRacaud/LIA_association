@@ -8,6 +8,13 @@ export interface EventDto extends IDataModel {
     teams?: Team[]
 }
 
+export function getTeamsFreePlaces(teams: Team[]): number
+{
+    return teams.reduce((prev, team, index, array) => {
+        return prev + (team.template.maxMember - team.members.length)
+    }, 0)
+}
+
 export default class Event implements IDataModel {
     uuid: string
     title: string
@@ -24,12 +31,5 @@ export default class Event implements IDataModel {
         this.title = title
         this.date = date
         this.teams = teams
-    }
-
-    public getTeamsFreePlaces(): number
-    {
-        return this.teams.reduce((prev, team, index, array) => {
-            return prev + (team.template.maxMember - team.members.length)
-        }, 0)
     }
 }
