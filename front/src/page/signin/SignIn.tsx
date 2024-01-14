@@ -70,6 +70,7 @@ export default function SignIn() {
     };
 
     return (
+        <div>
         <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -136,5 +137,10 @@ export default function SignIn() {
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
         </Container>
+        <Container maxWidth="sm"> {/* Temporary */}
+            <Alert severity="warning">Le logiciel est en version beta. Des erreurs peuvent subvenir.<br /> 
+                Contactez-moi via mon compte WhatsApp en cas de problème (Simon Racaud). Merci</Alert>
+        </Container>
+        </div>
     );
 }
