@@ -17,7 +17,7 @@ import {
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { DatePicker } from "@mui/x-date-pickers";
 import Event from "classes/Event";
-import TeamTemplate, { TeamType, teamTypeToString } from "classes/TeamTemplate";
+import TeamTemplate, { teamTypeToString } from "classes/TeamTemplate";
 import { useEffect, useReducer, useState } from "react";
 import Team from "classes/Team";
 import RemoveIcon from "@mui/icons-material/Delete";
@@ -32,17 +32,10 @@ type AddTeamFormProps = {
   list: Paginated<TeamTemplate> | undefined;
   event: Event;
   setEvent: (v: Event) => void;
-  forceUpdate: () => void;
   setErrorMsg: (m: string) => void;
 };
 
-function AddTeamForm({
-  list,
-  event,
-  setEvent,
-  forceUpdate,
-  setErrorMsg,
-}: AddTeamFormProps) {
+function AddTeamForm({ list, event, setEvent, setErrorMsg }: AddTeamFormProps) {
   const [newTemplates, setNewTemplates] = useState<number[]>([]);
 
   const handleChangeNewTeamTemplate = (event: SelectChangeEvent<number[]>) => {
@@ -56,58 +49,90 @@ function AddTeamForm({
   };
   const handleAddNewTeamTemplate = () => {
     if (list && newTemplates.length > 0) {
-        const templatesToAdd = list.data.filter((v: TeamTemplate, index: number) => {
-            const toAdd: boolean = newTemplates.find((v: number) => v == index) != undefined
-            if (
-                toAdd && event.teams.find((t) => v.uuid == t.template.uuid) == undefined
-            ) {
-                return toAdd
-            }
-            return false;
-        })
-        setEvent({
-            ...event,
-            teams: [
-                ...event.teams,
-                ...templatesToAdd.map((template: TeamTemplate) => new Team("", template))
-            ]
-        });
-        setNewTemplates([]) // Empty selection
-        if (templatesToAdd.length == 0) {
-            setErrorMsg("L'équipe existe déjà dans l'évènement");
+      const templatesToAdd = list.data.filter(
+        (v: TeamTemplate, index: number) => {
+          const toAdd: boolean =
+            newTemplates.find((v: number) => v == index) != undefined;
+          if (
+            toAdd &&
+            event.teams.find((t) => v.uuid == t.template.uuid) == undefined
+          ) {
+            return toAdd;
+          }
+          return false;
         }
+      );
+      setEvent({
+        ...event,
+        teams: [
+          ...event.teams,
+          ...templatesToAdd.map(
+            (template: TeamTemplate) => new Team("", template)
+          ),
+        ],
+      });
+      setNewTemplates([]); // Empty selection
+      if (templatesToAdd.length == 0) {
+        setErrorMsg("L'équipe existe déjà dans l'évènement");
+      }
+    }
+  };
+  const handleSelectAll = () => {
+    if (list) {
+      if (list.data.length == newTemplates.length) {
+        setNewTemplates([]);
+      } else {
+        setNewTemplates(Array.from(Array(list.data.length).keys()));
+      }
     }
   };
 
   return (
-    <FormControl variant="outlined">
-      <InputLabel id="new-team-select-label" sx={{ background: "white" }}>
-        Ajouter des équipes:
-      </InputLabel>
-      <Select
-        labelId="new-team-select-label"
-        id="new-team-select"
-        input={<OutlinedInput />}
-        multiple
-        value={newTemplates}
-        renderValue={(selected: any) =>
-          selected.map((v: number) => list?.data[v].title).join(", ")
-        }
-        onChange={handleChangeNewTeamTemplate}
-      >
-        {list?.data.map((template, index) => (
-          <MenuItem key={template.title} value={index}>
-            <Checkbox
-              checked={newTemplates.find((v: any) => v === index) != undefined}
-            />
-            <ListItemText primary={`${template.title} [${teamTypeToString(template.type)}]`} />
-          </MenuItem>
-        ))}
-      </Select>
-      <Button onClick={handleAddNewTeamTemplate} sx={{ mt: 2 }}>
+    <Stack spacing={2}>
+      {(list?.data.length == newTemplates.length && (
+        <Button onClick={handleSelectAll} variant="outlined">
+          Vider
+        </Button>
+      )) || (
+        <Button onClick={handleSelectAll} variant="outlined">
+          Tout séléctionner
+        </Button>
+      )}
+      <FormControl variant="outlined">
+        <InputLabel id="new-team-select-label" sx={{ background: "white" }}>
+          Ajouter des équipes:
+        </InputLabel>
+        <Select
+          labelId="new-team-select-label"
+          id="new-team-select"
+          input={<OutlinedInput />}
+          multiple
+          value={newTemplates}
+          renderValue={(selected: any) =>
+            selected.map((v: number) => list?.data[v].title).join(", ")
+          }
+          onChange={handleChangeNewTeamTemplate}
+        >
+          {list?.data.map((template, index) => (
+            <MenuItem key={template.title} value={index}>
+              <Checkbox
+                checked={
+                  newTemplates.find((v: any) => v === index) != undefined
+                }
+              />
+              <ListItemText
+                primary={`${template.title} [${teamTypeToString(
+                  template.type
+                )}]`}
+              />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <Button onClick={handleAddNewTeamTemplate} variant="contained">
         Ajouter
       </Button>
-    </FormControl>
+    </Stack>
   );
 }
 
@@ -218,7 +243,6 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
         list={list}
         event={event}
         setEvent={setEvent}
-        forceUpdate={forceUpdate}
         setErrorMsg={setErrorMsg}
       />
       <Divider />
