@@ -1,5 +1,6 @@
 import { UserType } from "classes/User";
 import HomePage from "page/home/HomePage";
+import NotFound from "page/notFound/NotFound";
 import Settings from "page/settings/Settings";
 import SignIn from "page/signin/SignIn";
 
@@ -27,4 +28,9 @@ export const routes: Route[] = [
         protected: true,
         role: UserType.ADMIN
     },
+    {
+        path: '*',
+        element: <NotFound />,
+        protected: false
+    }
 ]
