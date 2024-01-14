@@ -1,10 +1,10 @@
 import {
   Box,
   Button,
-  Container,
   IconButton,
   Pagination,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -19,6 +19,8 @@ import ShowDate from "components/ShowDate";
 import Paginated, { PaginationQuery } from "models/Paginated";
 import LaunchIcon from "@mui/icons-material/Launch";
 import GroupIcon from "@mui/icons-material/Group";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import Team from "classes/Team";
 
 export type EventTableProps = {
   user?: User;
@@ -61,6 +63,13 @@ export default function EventTable({
   const _getEventFromUuid = (uuid: string) => {
     return eventList?.data.find((e: Event) => e.uuid == uuid);
   };
+  const isUserMemberOfEvent = (event: Event): boolean => {
+    return (
+      event.teams.find(
+        (v: Team) => v.members.find((u: User) => u.id == user?.id) != undefined
+      ) != undefined
+    );
+  };
 
   return (
     <TableContainer component={Paper}>
@@ -68,7 +77,7 @@ export default function EventTable({
         <TableHead>
           <TableRow>
             <TableCell>Date</TableCell>
-            <TableCell>Manque</TableCell>
+            <TableCell>Vacant</TableCell>
             <TableCell>Montrer</TableCell>
             <TableCell>Événement</TableCell>
             {user?.role == UserType.ADMIN && (
@@ -88,19 +97,13 @@ export default function EventTable({
               <TableCell component="th" scope="row">
                 <ShowDate dateDayjs={event.date} />
               </TableCell>
-              <TableCell align="right">
-                <Container
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    p: 0
-                  }}
-                >
+              <TableCell>
+                <Stack spacing={1} direction="row">
                   <Typography sx={{ mr: 1 }}>
                     {event.getTeamsFreePlaces()}
                   </Typography>
                   <GroupIcon />
-                </Container>
+                </Stack>
               </TableCell>
               <TableCell>
                 <IconButton
@@ -114,7 +117,12 @@ export default function EventTable({
                   <LaunchIcon />
                 </IconButton>
               </TableCell>
-              <TableCell>{event.title}</TableCell>
+              <TableCell>
+                <Stack spacing={1} direction="row">
+                  {isUserMemberOfEvent(event) && <FavoriteIcon color="error" />}
+                  <Typography>{event.title}</Typography>
+                </Stack>
+              </TableCell>
               {user?.role == UserType.ADMIN && (
                 <TableCell align="right">
                   <Button
@@ -141,9 +149,7 @@ export default function EventTable({
           ))}
         </TableBody>
       </Table>
-      <Box
-        display="flex"
-        justifyContent="center">
+      <Box display="flex" justifyContent="center">
         <Pagination
           count={eventList?.max}
           color="primary"
