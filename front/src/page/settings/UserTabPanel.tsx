@@ -30,9 +30,9 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
     }, [])
 
     const handleNetError = (error: AxiosError) => {
-        const errorBody = error?.response?.data as NetErrorBody
+        const errorBody = error?.response?.data as NetErrorBody | undefined
         console.error(error?.message)
-        if (errorBody) {
+        if (errorBody == undefined) {
             setErrorNet(NetFailureBody)
         } else {
             setErrorNet(errorBody)
@@ -57,23 +57,18 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
     const onUserEditSubmit = async () => {
         if (selectedUser) {
             // API call
-            if (selectedUser.id != '') { 
-                try {
+            try {
+                if (selectedUser.id != '') { 
                     // New user created:
                     await UserService.updateUser(selectedUser)
-                } catch(error: any) {
-                    handleNetError(error)
-                }
-            } else {
-                try {
+                } else {
                     // Editing existing user:
                     await UserService.createUser(selectedUser)
-                    loadUserList() // refresh list
-                } catch(error: any) {
-                    handleNetError(error)
                 }
+                setShowEditDialog(false)
+            } catch(error: any) {
+                handleNetError(error)
             }
-            setShowEditDialog(false)
         }
     }
     const onCloseUserEditDialog = () => {

@@ -33,9 +33,9 @@ export default function TemplateTabPanel({ tabIndex }: TabPanelProps)
         fetchList()
     }, [])
     const handleNetError = (error: AxiosError) => {
-        const errorBody = error.response?.data as NetErrorBody
+        const errorBody = error.response?.data as NetErrorBody | undefined
         console.error(error.message)
-        if (errorBody) {
+        if (errorBody == undefined) {
             setErrorNet(NetFailureBody)
         } else {
             setErrorNet(errorBody)
@@ -70,12 +70,12 @@ export default function TemplateTabPanel({ tabIndex }: TabPanelProps)
                 } else {
                     await network.update(selected)
                 }
+                setShowEditDialog(false)
+                setCreateMode(false)
+                fetchList() // Refresh list
             } catch (error: any) {
                 handleNetError(error)
             }
-            setShowEditDialog(false)
-            setCreateMode(false)
-            fetchList() // Refresh list
         }
     }
     const onCloseEditDialog = () => {
