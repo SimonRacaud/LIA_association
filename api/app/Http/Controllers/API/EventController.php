@@ -5,8 +5,10 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\BaseController;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
+use App\Models\UserRole;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class EventController extends BaseController
@@ -17,9 +19,13 @@ class EventController extends BaseController
     public function index(Request $request)
     {
         try {
+            $user = Auth::user();
             $size = $request->query('size');
-
-            $list = Event::paginate($size == null ? 10 : $size);
+            if ($user->role == UserRole::ADMIN) {
+                $list = Event::paginate($size == null ? 10 : $size);
+            } else {
+                $list = Event::where("place_uuid", $user->place->uuid)->paginate($size == null ? 10 : $size);
+            }
             $list = $list->sortByDesc('date');
             return $this->sendCollection(
                 EventResource::collection($list),
