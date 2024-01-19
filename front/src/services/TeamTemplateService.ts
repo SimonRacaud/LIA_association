@@ -26,7 +26,9 @@ export default class TeamTemplateService extends NetworkService<TeamTemplate, Te
           d.title,
           d.type as TeamType,
           d.note,
-          d.maxMember
+          d.maxMember,
+          new Date(d.created_at as string),
+          new Date(d.updated_at as string),
         );
       }),
       max: result.max,
