@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Place;
 use App\Models\TeamTemplate;
 use App\Models\TeamType;
 use App\Models\UserRole;
@@ -18,7 +19,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         try {
-            \App\Models\User::create([
+            \App\Models\User::updateOrCreate([
                 'username' => 'admin',
                 'email' => 'simonracaud@gmail.com',
                 'password' => bcrypt(env('ADMIN_USER_PASS')),
@@ -85,6 +86,16 @@ class DatabaseSeeder extends Seeder
             ]);
         } catch (QueryException $e) {
             dump("Seeded: templates not created", $e->getMessage());
+        }
+        try {
+            Place::updateOrCreate([
+                'label' => 'Allonnes'
+            ]);
+            Place::updateOrCreate([
+                'label' => 'Étival-lès-le-Mans'
+            ]);
+        } catch (UniqueConstraintViolationException $e) {
+            dump("Seeder: Places not created.", $e->getMessage());
         }
     }
 }
