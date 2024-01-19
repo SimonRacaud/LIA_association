@@ -31,13 +31,14 @@ export default class NetworkCoreService<T extends IDataModel> {
     return response.data;
   }
 
-  public async getList(page = 0, size = 10): Promise<Paginated<T>> {
+  public async getList(page = 0, size = 10, other: any = {}): Promise<Paginated<T>> {
     const params: {
       size: number;
       page: number;
     } = {
       size,
       page,
+      ...other
     };
 
     const res = await apiInstance.get(this.endpoint, params);

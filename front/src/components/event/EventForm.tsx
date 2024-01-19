@@ -29,6 +29,7 @@ import ErrorNotification from "../ErrorNotification";
 import NetErrorBody, { NetFailureBody } from "models/ErrorResponse";
 import Place from "classes/Place";
 import SelectPlaceForm from "components/SelectPlaceForm";
+import { useUser } from "context/UserContext";
 
 type AddTeamFormProps = {
   list: Paginated<TeamTemplate> | undefined;
@@ -161,7 +162,13 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
 
   const fetchList = async () => {
     try {
-      setList(await network.getList(listQuery.page, listQuery.size));
+      setList(
+        await network.getList(
+          listQuery.page,
+          listQuery.size,
+          event.place?.uuid
+        )
+      );
     } catch (error) {
       const netError = error as AxiosError;
       const errorBody = netError.response?.data as NetErrorBody;
@@ -222,8 +229,8 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
         setPlace={(p: Place) => {
           setEvent({
             ...event,
-            place: p
-          })
+            place: p,
+          });
           forceUpdate();
         }}
       />

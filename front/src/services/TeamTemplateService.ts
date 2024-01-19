@@ -20,10 +20,11 @@ export default class TeamTemplateService extends NetworkService<
     return this.instance;
   }
 
-  public async getList(page = 0, size = 10): Promise<Paginated<TeamTemplate>> {
+  public async getList(page = 0, size = 10, placeId?: string): Promise<Paginated<TeamTemplate>> {
     const result: Paginated<TeamTemplateDTO> = await this.core.getList(
       page,
-      size
+      size,
+      {placeId}
     );
 
     return {
