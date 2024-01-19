@@ -80,6 +80,9 @@ export default function EventTable({
             <TableCell>Vacant</TableCell>
             <TableCell>Montrer</TableCell>
             <TableCell>Événement</TableCell>
+            {user?.role == UserType.ADMIN &&
+              <TableCell>Lieu</TableCell>
+            }
             {user?.role == UserType.ADMIN && (
               <TableCell align="right">Éditer</TableCell>
             )}
@@ -123,6 +126,9 @@ export default function EventTable({
                   <Typography>{event.title}</Typography>
                 </Stack>
               </TableCell>
+              {user?.role == UserType.ADMIN &&
+                <TableCell>{event.place?.label}</TableCell>
+              }
               {user?.role == UserType.ADMIN && (
                 <TableCell align="right">
                   <Button

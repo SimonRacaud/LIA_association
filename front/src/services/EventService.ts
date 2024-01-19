@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { NetworkService } from "./NetworkService";
 import Team from "classes/Team";
 import TeamService from "./TeamService";
+import Place, { PlaceDto } from "classes/Place";
 
 export default class EventService extends NetworkService<Event, EventDto> {
   constructor() {
@@ -24,7 +25,18 @@ export default class EventService extends NetworkService<Event, EventDto> {
 
     return {
       data: result.data.map((d) => {
-        return new Event(d.uuid, d.title, dayjs(d.date, "DD-MM-YYYY"), d.teams);
+        return new Event(
+          d.uuid,
+          d.title,
+          dayjs(d.date, "DD-MM-YYYY"),
+          d.teams,
+          new Place(
+            d.place!!.uuid,
+            d.place!!.label,
+            d.place!!.created_at,
+            d.place!!.updated_at
+          )
+        );
       }),
       max: result.max,
       page: result.page,
@@ -36,6 +48,7 @@ export default class EventService extends NetworkService<Event, EventDto> {
       uuid: data.uuid,
       title: data.title,
       date: data.date.format("DD/MM/YYYY"),
+      place_uuid: data.place?.uuid,
     });
     // Create teams:
     await Promise.all(
@@ -72,6 +85,7 @@ export default class EventService extends NetworkService<Event, EventDto> {
       uuid: "",
       title: data.title,
       date: data.date.format("DD/MM/YYYY"),
+      place_uuid: data.place?.uuid,
     });
 
     // create teams
@@ -91,7 +105,13 @@ export default class EventService extends NetworkService<Event, EventDto> {
         result.uuid,
         result.title,
         dayjs(result.date, "DD-MM-YYYY"),
-        result.teams
+        result.teams,
+        new Place(
+          result.place!!.uuid,
+          result.place!!.label,
+          result.place!!.created_at,
+          result.place!!.updated_at
+        )
       );
     }
     return null;

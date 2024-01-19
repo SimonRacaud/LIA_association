@@ -27,6 +27,8 @@ import TeamTemplateService from "services/TeamTemplateService";
 import { AxiosError } from "axios";
 import ErrorNotification from "../ErrorNotification";
 import NetErrorBody, { NetFailureBody } from "models/ErrorResponse";
+import Place from "classes/Place";
+import PlaceService from "services/PlaceService";
 
 type AddTeamFormProps = {
   list: Paginated<TeamTemplate> | undefined;
@@ -136,6 +138,73 @@ function AddTeamForm({ list, event, setEvent, setErrorMsg }: AddTeamFormProps) {
   );
 }
 
+type SelectPlaceFormProps = {
+  event: Event;
+  setEvent: (v: Event) => void;
+  setErrorNet: (e: NetErrorBody) => void;
+  forceUpdate: () => void;
+};
+
+function SelectPlaceForm({
+  event,
+  setEvent,
+  setErrorNet,
+  forceUpdate,
+}: SelectPlaceFormProps) {
+  const [list, setList] = useState<Paginated<Place>>();
+  const [listQuery, setListQuery] = useState<PaginationQuery>({
+    page: 1,
+    size: 10,
+  });
+  const network = PlaceService.getInstance();
+
+  useEffect(() => {
+    fetchList();
+  }, []);
+
+  const fetchList = async () => {
+    try {
+      setList(await network.getList(listQuery.page, listQuery.size));
+    } catch (error) {
+      const netError = error as AxiosError;
+      const errorBody = netError.response?.data as NetErrorBody;
+      console.error((error as AxiosError).message);
+      if (errorBody != undefined) {
+        setErrorNet(errorBody);
+      } else {
+        setErrorNet(NetFailureBody);
+      }
+    }
+  };
+  const handleChangePlace = (e: SelectChangeEvent) => {
+    const value = e.target.value
+
+    const newPlace = list?.data.find((p) => p.uuid === value);
+    if (newPlace) {
+      event.place = newPlace;
+      setEvent(event);
+      forceUpdate();
+    }
+  };
+
+  return (
+    <FormControl variant="standard" sx={{ m: 1, minWidth: 300 }}>
+      <InputLabel id="place-label">Lieu</InputLabel>
+      <Select
+        labelId="place-label"
+        value={event.place?.uuid}
+        onChange={handleChangePlace}
+      >
+        {list?.data.map((place) => {
+          return (
+            <MenuItem key={place.uuid} value={place.uuid}>{place.label}</MenuItem>
+          );
+        })}
+      </Select>
+    </FormControl>
+  );
+}
+
 type EventFormProps = {
   initEvent?: Event;
   onSubmit: (e: Event) => void;
@@ -213,6 +282,12 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
         onChange={(e) => {
           if (e) event.date = e;
         }}
+      />
+      <SelectPlaceForm 
+        event={event}
+        setErrorNet={setErrorNet}
+        setEvent={setEvent}
+        forceUpdate={forceUpdate}
       />
 
       <Divider />
