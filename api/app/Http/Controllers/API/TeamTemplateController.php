@@ -26,7 +26,7 @@ class TeamTemplateController extends BaseController
                 TeamTemplate::count(),
             );
         } catch (\Exception $exception) {
-            return $this->sendError("Failure", [$exception->getMessage()], 500);
+            return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
         }
     }
 
