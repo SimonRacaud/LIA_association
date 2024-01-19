@@ -1,5 +1,5 @@
 import { Button, IconButton, TableCell, TableRow } from "@mui/material"
-import ShowDate from "./ShowDate"
+import ShowDate from "../ShowDate"
 import User, { userTypeToString } from "classes/User"
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 

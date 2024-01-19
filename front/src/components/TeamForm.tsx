@@ -2,7 +2,7 @@ import { Box, Card, Stack, Typography } from "@mui/material";
 import TeamTemplateForm from "./template/TeamTemplateForm";
 import Team from "classes/Team";
 import TeamTemplate from "classes/TeamTemplate";
-import UserTable from "./UserTable";
+import UserTable from "./user/UserTable";
 import TeamService from "services/TeamService";
 import { AxiosError } from "axios";
 import NetErrorBody, { NetFailureBody } from "models/ErrorResponse";

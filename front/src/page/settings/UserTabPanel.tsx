@@ -1,11 +1,11 @@
-import UserTable from "components/UserTable"
+import UserTable from "components/user/UserTable"
 import { TabPanelProps } from "./Settings"
 import User from "classes/User"
 import { Box, Button, Container, IconButton, Pagination } from "@mui/material"
 import CreateIcon from '@mui/icons-material/Add'
 import EditDialog from "components/EditDialog"
 import { useEffect, useReducer, useState } from "react"
-import UserForm from "components/UserForm"
+import UserForm from "components/user/UserForm"
 import AlertDialog from "components/AlertDialog"
 import UserService from "services/UserService"
 import Paginated from "models/Paginated"

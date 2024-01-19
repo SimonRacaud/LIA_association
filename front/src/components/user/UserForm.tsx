@@ -1,6 +1,6 @@
 import { Card, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, TextField, Typography } from "@mui/material"
 import User, { UserType, userTypeOptions, userTypeToString } from "classes/User"
-import ShowDate from "./ShowDate"
+import ShowDate from "../ShowDate"
 import { ChangeEvent } from "react"
 
 
