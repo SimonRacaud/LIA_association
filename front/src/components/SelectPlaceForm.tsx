@@ -64,7 +64,7 @@ export default function SelectPlaceForm({
       <InputLabel id="place-label">Lieu</InputLabel>
       <Select
         labelId="place-label"
-        value={place?.uuid}
+        defaultValue={place?.uuid}
         onChange={handleChangePlace}
         disabled={disable}
       >

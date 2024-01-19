@@ -216,19 +216,17 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
           if (e) event.date = e;
         }}
       />
-      {event.place &&
-        <SelectPlaceForm
-          place={event.place}
-          setErrorNet={setErrorNet}
-          setPlace={(p: Place) => {
-            setEvent({
-              ...event,
-              place: p
-            })
-            forceUpdate();
-          }}
-        />
-      }
+      <SelectPlaceForm
+        place={event.place}
+        setErrorNet={setErrorNet}
+        setPlace={(p: Place) => {
+          setEvent({
+            ...event,
+            place: p
+          })
+          forceUpdate();
+        }}
+      />
 
       <Divider />
 
