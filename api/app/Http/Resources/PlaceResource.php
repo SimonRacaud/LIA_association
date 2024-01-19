@@ -17,6 +17,8 @@ class PlaceResource extends JsonResource
         return [
             'uuid' => $this->uuid,
             'label' => $this->label,
+            'created_at' => $this->created_at->format('Y-m-d'),
+            'updated_at' => $this->updated_at->format('Y-m-d'),
         ];
     }
 }
