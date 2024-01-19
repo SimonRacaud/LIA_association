@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
@@ -41,7 +42,8 @@ class Event extends Model
 
     protected $fillable = [
         'title',
-        'date'
+        'date',
+        'place_uuid'
     ];
 
     protected $casts = [
@@ -51,12 +53,14 @@ class Event extends Model
     public static array $validation = [
         'title' => 'required|max:255|min:1',
         'date' => 'required|date_format:d/m/Y',
+        'place_uuid' => ['required', 'uuid', 'exists:App\Models\Place,uuid'],
 //        'teams' => 'array',
 //        "teams.*"  => "exists:App\Models\Team,uuid",
     ];
     public static array $validationUpdate = [
         'title' => 'max:255|min:1',
         'date' => 'date_format:d/m/Y',
+        'place_uuid' => ['uuid', 'exists:App\Models\Place,uuid'],
 //        'teams' => 'array',
 //        "teams.*"  => "exists:App\Models\Team,uuid",
     ];
@@ -75,4 +79,9 @@ class Event extends Model
     {
         return $this->hasMany(Team::class, 'event_uuid');
     }
+    public function place(): BelongsTo
+    {
+        return $this->belongsTo(Place::class, 'place_uuid');
+    }
+
 }

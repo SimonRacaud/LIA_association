@@ -18,7 +18,8 @@ class EventResource extends JsonResource
             'uuid' => $this->uuid,
             'title' => $this->title,
             'date' => $this->date->format('d-m-Y'),
-            'teams' => TeamResource::collection($this->teams)
+            'teams' => TeamResource::collection($this->teams),
+            'place' => new PlaceResource($this->place),
         ];
     }
 }
