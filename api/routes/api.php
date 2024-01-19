@@ -8,6 +8,7 @@ use App\Http\Controllers\API\UsersController;
 use App\Http\Controllers\API\TeamTemplateController;
 use App\Http\Controllers\API\TeamController;
 use App\Http\Controllers\API\EventController;
+use App\Http\Controllers\API\PlaceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +44,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('event', [EventController::class, 'index']);
     Route::get('event/{uuid}', [EventController::class, 'show']);
 
+    Route::get('place', [PlaceController::class, 'index']);
+    Route::get('place/{uuid}', [PlaceController::class, 'show']);
+
     // Used to subscribe/unsubscribe members to event's teams:
     Route::put('team/subscribe/{uuid}', [TeamController::class, 'updateMembers']);
 
@@ -62,6 +66,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('event', [EventController::class, 'store']);
         Route::put('event/{uuid}', [EventController::class, 'update']);
         Route::delete('event/{uuid}', [EventController::class, 'destroy']);
+
+        Route::post('place', [PlaceController::class, 'store']);
+        Route::put('place/{uuid}', [PlaceController::class, 'update']);
+        Route::delete('place/{uuid}', [PlaceController::class, 'destroy']);
     });
 });
 
