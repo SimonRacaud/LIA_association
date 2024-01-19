@@ -19,6 +19,7 @@ class UserResource extends JsonResource
             'username' => $this->username,
             'email' => $this->email,
             'role' => $this->role,
+            'place' => new PlaceResource($this->place),
             'created_at' => $this->created_at->format('d-m-Y'),
             'updated_at' => $this->updated_at->format('d-m-Y'),
         ];

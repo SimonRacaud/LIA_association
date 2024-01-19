@@ -44,8 +44,8 @@ class Place extends Model
         });
     }
 
-    public function teamTemplates(): HasMany
+    public static function findByLabel(string $label)
     {
-        return $this->hasMany(TeamTemplate::class, 'uuid', 'place_uuid');
+        return Place::where("label", $label)->firstOrFail();
     }
 }

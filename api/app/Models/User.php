@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -29,6 +30,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'place_uuid',
     ];
 
     /**
@@ -47,7 +49,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'password' => 'hashed',
-        'role' => UserRole::class
+        'role' => UserRole::class,
     ];
 
     public static function validation() {
@@ -55,12 +57,28 @@ class User extends Authenticatable
             'username' => ['required', 'unique:users', 'max:255'],
             'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'min:8'],
-            'role' => ['required', Rule::in(array_column(UserRole::cases(), 'value'))]
+            'role' => ['required', Rule::in(array_column(UserRole::cases(), 'value'))],
+            'place_uuid' => ['required', 'uuid', 'exists:App\Models\Place,uuid'],
+        ];
+    }
+
+    public static function validationUpdate($id) {
+        return [
+            'username' => [Rule::unique('users')->ignore($id, 'id'), 'max:255'],
+            'email' => ['email', Rule::unique('users')->ignore($id, 'id')],
+            'password' => 'min:8',
+            'role' => [Rule::in(array_column(UserRole::cases(), 'value'))],
+            'place_uuid' => ['uuid', 'exists:App\Models\Place,uuid'],
         ];
     }
 
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'teams_users', 'user_id', 'team_uuid');
+    }
+
+    public function place(): BelongsTo
+    {
+        return $this->belongsTo(Place::class, 'place_uuid');
     }
 }

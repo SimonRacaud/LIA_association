@@ -59,12 +59,7 @@ class UsersController extends BaseController
     {
         try {
             $user = User::findOrFail($id);
-            $data = $request->validate([
-                'username' => [Rule::unique('users')->ignore($user->id, 'id'), 'max:255'],
-                'email' => ['email', Rule::unique('users')->ignore($user->id, 'id')],
-                'password' => 'min:8',
-                'role' => [Rule::in(array_column(UserRole::cases(), 'value'))],
-            ]);
+            $data = $request->validate(User::validationUpdate($user->id));
 
             if (array_key_exists('password', $data)) {
                 $data['password'] = bcrypt($data['password']);
