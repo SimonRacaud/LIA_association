@@ -30,7 +30,6 @@ return new class extends Migration
             $table->foreignUuid('template_uuid')
                 ->references('uuid')
                 ->on('team_templates')
-                ->onUpdate('cascade')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
 
@@ -57,9 +56,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('team_templates');
-        Schema::dropIfExists('teams');
-        Schema::dropIfExists('events');
         Schema::dropIfExists('teams_users');
+        Schema::dropIfExists('teams');
+        Schema::dropIfExists('team_templates');
+        Schema::dropIfExists('events');
     }
 };
