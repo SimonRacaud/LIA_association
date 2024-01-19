@@ -17,8 +17,13 @@ class TeamTemplateController extends BaseController
     {
         try {
             $size = $request->query('size');
+            $placeId = $request->query('placeId');
 
-            $list = TeamTemplate::paginate($size == null ? 10 : $size);
+            if ($placeId) {
+                $list = TeamTemplate::where("place_uuid", $placeId)->paginate($size == null ? 10 : $size);
+            } else {
+                $list = TeamTemplate::paginate($size == null ? 10 : $size);
+            }
             return $this->sendCollection(
                 TeamTemplateResource::collection($list),
                 intval($request->query('page')),
