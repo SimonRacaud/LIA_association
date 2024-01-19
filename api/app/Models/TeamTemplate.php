@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -54,13 +55,15 @@ class TeamTemplate extends Model
     protected $attributes = [
         'maxMember' => 0,
         'note' => '',
+        'place_uuid' => null,
     ];
 
     protected $fillable = [
         'title',
         'type',
         'note',
-        'maxMember'
+        'maxMember',
+        'place_uuid',
     ];
 
     protected $casts = [
@@ -73,7 +76,8 @@ class TeamTemplate extends Model
             'title' => 'required|max:255|unique:team_templates',
             'type' => ['required', Rule::in(array_column(TeamType::cases(), 'value'))],
             'note' => 'max:255',
-            'maxMember' => 'required|numeric'
+            'maxMember' => 'required|numeric',
+            'place_uuid' => ['uuid', 'exists:App\Models\Place,uuid'],
         ];
     }
     public static function validationUpdate(string $uuid): array
@@ -82,7 +86,8 @@ class TeamTemplate extends Model
             'title' => ['max:255', Rule::unique('team_templates')->ignore($uuid, 'uuid')],
             'type' => [Rule::in(array_column(TeamType::cases(), 'value'))],
             'note' => 'max:255',
-            'maxMember' => 'numeric'
+            'maxMember' => 'numeric',
+            'place_uuid' => ['uuid', 'exists:App\Models\Place,uuid'],
         ];
     }
     public static function booted(): void
@@ -95,5 +100,10 @@ class TeamTemplate extends Model
     public function teams(): HasMany
     {
         return $this->hasMany(Team::class);
+    }
+
+    public function place(): BelongsTo
+    {
+        return $this->belongsTo(Place::class, 'place_uuid', 'uuid')->withDefault();
     }
 }
