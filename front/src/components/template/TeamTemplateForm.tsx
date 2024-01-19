@@ -1,14 +1,18 @@
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, TextField } from "@mui/material";
+import Place from "classes/Place";
 import TeamTemplate, { TeamType, teamTypeOptions, teamTypeToString } from "classes/TeamTemplate";
+import SelectPlaceForm from "components/SelectPlaceForm";
+import NetErrorBody from "models/ErrorResponse";
 import { ChangeEvent } from "react";
 
 type TeamTemplateFormProps = {
     template?: TeamTemplate // undefined if we want to create a new one
     setTemplate: (t: TeamTemplate, update: boolean) => void
-    lock?: boolean
+    lock?: boolean,
+    setErrorNet: (e: NetErrorBody) => void
 }
 
-export default function TeamTemplateForm({template, setTemplate, lock}: TeamTemplateFormProps)
+export default function TeamTemplateForm({template, setTemplate, lock, setErrorNet}: TeamTemplateFormProps)
 {
     if (!template) {
         template = new TeamTemplate("", "", TeamType.RAMASSAGE, "", 0)
@@ -64,6 +68,18 @@ export default function TeamTemplateForm({template, setTemplate, lock}: TeamTemp
                     })}
                 </Select>
             </FormControl>
+            {template.place &&
+                <SelectPlaceForm
+                    place={template.place}
+                    setPlace={(p: Place) => {
+                        setTemplate({
+                            ...template,
+                            place: p
+                        } as TeamTemplate, true)
+                    }}
+                    setErrorNet={setErrorNet}
+                />
+            }
             <TextField label="Memo" variant="standard" defaultValue={template.note} 
                 onChange={handleMemoChange} InputLabelProps={{ shrink: true }}
                 disabled={lock} />

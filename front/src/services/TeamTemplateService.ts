@@ -1,8 +1,12 @@
 import Paginated from "models/Paginated";
 import { NetworkService } from "./NetworkService";
 import TeamTemplate, { TeamTemplateDTO, TeamType } from "classes/TeamTemplate";
+import Place from "classes/Place";
 
-export default class TeamTemplateService extends NetworkService<TeamTemplate, TeamTemplateDTO> {
+export default class TeamTemplateService extends NetworkService<
+  TeamTemplate,
+  TeamTemplateDTO
+> {
   constructor() {
     super("/team/template");
   }
@@ -17,7 +21,10 @@ export default class TeamTemplateService extends NetworkService<TeamTemplate, Te
   }
 
   public async getList(page = 0, size = 10): Promise<Paginated<TeamTemplate>> {
-    const result: Paginated<TeamTemplateDTO> = await this.core.getList(page, size);
+    const result: Paginated<TeamTemplateDTO> = await this.core.getList(
+      page,
+      size
+    );
 
     return {
       data: result.data.map((d: TeamTemplateDTO) => {
@@ -27,8 +34,14 @@ export default class TeamTemplateService extends NetworkService<TeamTemplate, Te
           d.type as TeamType,
           d.note,
           d.maxMember,
+          new Place(
+            d.place!!.uuid,
+            d.place!!.label,
+            new Date(d.place!!.created_at as string),
+            new Date(d.place!!.updated_at as string)
+          ),
           new Date(d.created_at as string),
-          new Date(d.updated_at as string),
+          new Date(d.updated_at as string)
         );
       }),
       max: result.max,
@@ -39,30 +52,36 @@ export default class TeamTemplateService extends NetworkService<TeamTemplate, Te
   public async update(data: TeamTemplate): Promise<void> {
     await this.core.update({
       ...data,
-      type: data.type,
+      place_uuid: data.place?.uuid
     });
   }
 
   public async create(data: TeamTemplate): Promise<void> {
     await this.core.create({
-        ...data,
-        type: data.type
+      ...data,
+      place_uuid: data.place?.uuid
     });
   }
   public async getOne(id: string): Promise<TeamTemplate | null> {
     const result = await this.core.getOne(id);
     if (result) {
-        return new TeamTemplate(
-            result.uuid,
-            result.title,
-            result.type as TeamType,
-            result.note,
-            result.maxMember
-        )
+      return new TeamTemplate(
+        result.uuid,
+        result.title,
+        result.type as TeamType,
+        result.note,
+        result.maxMember,
+        new Place(
+          result.place!!.uuid,
+          result.place!!.label,
+          new Date(result.place!!.created_at as string),
+          new Date(result.place!!.updated_at as string)
+        ),
+      );
     }
-    return null
+    return null;
   }
   public async remove(id: string): Promise<void> {
-    await this.core.remove(id)
+    await this.core.remove(id);
   }
 }

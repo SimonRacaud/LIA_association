@@ -1,5 +1,5 @@
 import { Box, Card, Stack, Typography } from "@mui/material";
-import TeamTemplateForm from "./TeamTemplateForm";
+import TeamTemplateForm from "./template/TeamTemplateForm";
 import Team from "classes/Team";
 import TeamTemplate from "classes/TeamTemplate";
 import UserTable from "./UserTable";
@@ -46,7 +46,7 @@ export default function TeamForm({ team, setTeam }: TeamFormProps)
         <Box>
             <Stack spacing={2}>
                 {/* Template */}
-                <TeamTemplateForm template={team.template} setTemplate={updateTeamTemplate} lock={true} />
+                <TeamTemplateForm template={team.template} setTemplate={updateTeamTemplate} lock={true} setErrorNet={setErrorNet} />
                 {/* Members */}
                 {team.members.length > 0 &&
                 <Card sx={{ m: 1, p: 0 }}>

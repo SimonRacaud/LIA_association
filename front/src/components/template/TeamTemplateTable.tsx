@@ -14,6 +14,7 @@ function TeamTemplateTableRow({ template, onEdit, onRemove }: EventTeamTableRowP
             <TableCell>{teamTypeToString(template.type)}</TableCell>
             <TableCell>{template.note}</TableCell>
             <TableCell>{template.maxMember}</TableCell>
+            <TableCell>{template.place?.label}</TableCell>
             <TableCell align='right'>
                <Button variant="outlined" onClick={() => onEdit(template.uuid)}>Éditer</Button>
             </TableCell>
@@ -40,6 +41,7 @@ export default function TeamTemplateTable({ templateList, onEdit, onRemove }: Te
                         <TableCell>Type</TableCell>
                         <TableCell>Memo</TableCell>
                         <TableCell>Nombre de places</TableCell>
+                        <TableCell>Lieu</TableCell>
                         <TableCell align='right'>Editer</TableCell>
                         <TableCell align='right'>Supprimer</TableCell>
                     </TableRow>

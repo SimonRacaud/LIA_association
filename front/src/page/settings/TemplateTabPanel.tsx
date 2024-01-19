@@ -4,9 +4,9 @@ import CreateIcon from '@mui/icons-material/Add'
 import EditDialog from "components/EditDialog";
 import { useEffect, useReducer, useState } from "react";
 import TeamTemplate from "classes/TeamTemplate";
-import TeamTemplateForm from "components/TeamTemplateForm";
+import TeamTemplateForm from "components/template/TeamTemplateForm";
 import AlertDialog from "components/AlertDialog";
-import TeamTemplateTable from "components/TeamTemplateTable";
+import TeamTemplateTable from "components/template/TeamTemplateTable";
 import TeamTemplateService from "services/TeamTemplateService";
 import Paginated, { PaginationQuery } from "models/Paginated";
 import { AxiosError } from "axios";
@@ -127,7 +127,7 @@ export default function TemplateTabPanel({ tabIndex }: TabPanelProps)
                     <TeamTemplateForm setTemplate={(t: TeamTemplate) => {
                         setSelected(t)
                         forceUpdate()
-                    }} template={selected} />
+                    }} template={selected} setErrorNet={setErrorNet} />
                     <Container sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Button variant="contained" sx={{ mt: 2 }} onClick={onEditDialogSubmit}>Envoyer</Button>
                     </Container>
