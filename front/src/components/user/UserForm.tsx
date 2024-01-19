@@ -2,14 +2,18 @@ import { Card, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Sta
 import User, { UserType, userTypeOptions, userTypeToString } from "classes/User"
 import ShowDate from "../ShowDate"
 import { ChangeEvent } from "react"
+import SelectPlaceForm from "components/SelectPlaceForm"
+import NetErrorBody from "models/ErrorResponse"
+import Place from "classes/Place"
 
 
 type UserFormProps = {
     user?: User
     setUser: (u: User) => void
+    setErrorNet: (e: NetErrorBody) => void
 }
 
-export default function UserForm({ user, setUser }: UserFormProps)
+export default function UserForm({ user, setUser, setErrorNet }: UserFormProps)
 {
     if (!user) {
         user = new User("", "", UserType.MEMBRE, new Date(), "")
@@ -59,6 +63,16 @@ export default function UserForm({ user, setUser }: UserFormProps)
                         })}
                     </Select>
                 </FormControl>
+                <SelectPlaceForm
+                    place={user.place}
+                    setPlace={(p: Place) => {
+                        setUser({
+                            ...user,
+                            place: p
+                        } as User);
+                    }}
+                    setErrorNet={setErrorNet}
+                />
                 {user &&
                     <Typography color="text.secondary" variant="subtitle2" sx={{
                         display: 'flex',

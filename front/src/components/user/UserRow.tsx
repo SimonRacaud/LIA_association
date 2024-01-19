@@ -24,7 +24,9 @@ export default function UserRow({ user, onEdit, onRemove, short }: UserRowProps)
                 </TableCell>
             }
             <TableCell>{user.email}</TableCell>
-
+            {!short &&
+                <TableCell>{user.place?.label}</TableCell>
+            }
             {onEdit &&
                 <TableCell align="right">
                     <Button variant="outlined" onClick={() => onEdit(user.id)}>Éditer</Button>

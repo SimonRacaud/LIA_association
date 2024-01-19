@@ -25,6 +25,9 @@ export default function UserTable({ userList, onEditUser, onRemoveUser, short }:
                             <TableCell>Date de création</TableCell>
                         }
                         <TableCell>E-mail</TableCell>
+                        {!short &&
+                            <TableCell>Lieu</TableCell>
+                        }
                         {onEditUser &&
                             <TableCell align='right'>Editer</TableCell>
                         }

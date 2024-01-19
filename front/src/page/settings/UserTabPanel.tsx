@@ -66,6 +66,7 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
                     await UserService.createUser(selectedUser)
                 }
                 setShowEditDialog(false)
+                loadUserList();
             } catch(error: any) {
                 handleNetError(error)
             }
@@ -125,7 +126,7 @@ export default function UserTabPanel({ tabIndex }: TabPanelProps)
                     <UserForm setUser={(u: User) => {
                         setSelectedUser(u)
                         forceUpdate()
-                    }} user={selectedUser} />
+                    }} user={selectedUser} setErrorNet={setErrorNet} />
                     <Container sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Button variant="contained" sx={{ mt: 2 }} onClick={onUserEditSubmit}>Envoyer</Button>
                     </Container>

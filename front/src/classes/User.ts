@@ -1,3 +1,4 @@
+import Place from "./Place";
 
 export enum UserType {
   MEMBRE = 'MEMBRE',
@@ -15,6 +16,7 @@ export default class User {
   created_at: Date
   email: string
   password?: string
+  place?: Place
 
   constructor(
     id: string,
@@ -23,6 +25,7 @@ export default class User {
     created_at: Date,
     email: string,
     password?: string,
+    place?: Place
   ) {
     this.id = id
     this.username = username
@@ -30,5 +33,6 @@ export default class User {
     this.created_at = created_at
     this.email = email
     this.password = password
+    this.place = place
   }
 }

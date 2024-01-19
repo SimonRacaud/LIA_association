@@ -36,7 +36,14 @@ export default class UserService {
   };
 
   public static updateUser = async (user: User): Promise<void> => {
-    await apiInstance.put(`/users/${user.id}`, user);
+    await apiInstance.put(`/users/${user.id}`, {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      password: (user.password == "") ? undefined : user.password,
+      place_uuid: user.place?.uuid,
+    });
   };
 
   public static updatePassword = async (
