@@ -68,19 +68,17 @@ export default function TeamTemplateForm({template, setTemplate, lock, setErrorN
                     })}
                 </Select>
             </FormControl>
-            {template.place &&
-                <SelectPlaceForm
-                    place={template.place}
-                    setPlace={(p: Place) => {
-                        setTemplate({
-                            ...template,
-                            place: p
-                        } as TeamTemplate, true)
-                    }}
-                    setErrorNet={setErrorNet}
-                    disable={lock}
-                />
-            }
+            <SelectPlaceForm
+                place={template.place}
+                setPlace={(p: Place) => {
+                    setTemplate({
+                        ...template,
+                        place: p
+                    } as TeamTemplate, true)
+                }}
+                setErrorNet={setErrorNet}
+                disable={lock}
+            />
             <TextField label="Memo" variant="standard" defaultValue={template.note} 
                 onChange={handleMemoChange} InputLabelProps={{ shrink: true }}
                 disabled={lock} />

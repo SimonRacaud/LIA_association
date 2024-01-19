@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import PlaceService from "services/PlaceService";
 
 type SelectPlaceFormProps = {
-  place: Place;
+  place?: Place;
   setPlace: (p: Place) => void;
   setErrorNet: (e: NetErrorBody) => void;
   disable?: boolean;
@@ -64,7 +64,7 @@ export default function SelectPlaceForm({
       <InputLabel id="place-label">Lieu</InputLabel>
       <Select
         labelId="place-label"
-        value={place.uuid}
+        value={place?.uuid}
         onChange={handleChangePlace}
         disabled={disable}
       >
