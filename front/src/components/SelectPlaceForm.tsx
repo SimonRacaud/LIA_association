@@ -16,12 +16,14 @@ type SelectPlaceFormProps = {
   place: Place;
   setPlace: (p: Place) => void;
   setErrorNet: (e: NetErrorBody) => void;
+  disable?: boolean;
 };
 
 export default function SelectPlaceForm({
   place,
   setPlace,
   setErrorNet,
+  disable
 }: SelectPlaceFormProps) {
   const [list, setList] = useState<Paginated<Place>>();
   const [listQuery, setListQuery] = useState<PaginationQuery>({
@@ -64,6 +66,7 @@ export default function SelectPlaceForm({
         labelId="place-label"
         value={place.uuid}
         onChange={handleChangePlace}
+        disabled={disable}
       >
         {list?.data.map((p) => {
           return (

@@ -57,13 +57,13 @@ export default function TeamTemplateForm({template, setTemplate, lock, setErrorN
                 <Select
                     labelId="team-type-label"
                     id="team-type-select"
-                    value={template.type.toString()}
+                    value={template.type}
                     onChange={handleChangeTemplateType}
                     disabled={lock}
                 >
-                    {teamTypeOptions.map((option) => {
-                        return (                   
-                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                    {teamTypeOptions.map((option: TeamType) => {
+                        return (
+                            <MenuItem key={option} value={option}>{teamTypeToString(option)}</MenuItem>
                         )
                     })}
                 </Select>
@@ -78,6 +78,7 @@ export default function TeamTemplateForm({template, setTemplate, lock, setErrorN
                         } as TeamTemplate, true)
                     }}
                     setErrorNet={setErrorNet}
+                    disable={lock}
                 />
             }
             <TextField label="Memo" variant="standard" defaultValue={template.note} 
