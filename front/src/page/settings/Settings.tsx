@@ -5,6 +5,7 @@ import BackIcon from '@mui/icons-material/Home'
 import { useNavigate } from "react-router-dom";
 import TemplateTabPanel from "./TemplateTabPanel";
 import { tabPanelA11yProps } from "components/CustomTabPanel";
+import PlaceTabPanel from "./PlaceTabPanel";
 
 export type TabPanelProps = {
     tabIndex: number
@@ -33,9 +34,11 @@ export default function Settings()
             <Tabs value={tabIndex} onChange={handleChange} aria-label="basic tabs example">
                 <Tab label="Utilisateurs" {...tabPanelA11yProps(0)} />
                 <Tab label="Modèles d'équipe" {...tabPanelA11yProps(1)} />
+                <Tab label="Lieux" {...tabPanelA11yProps(2)} />
             </Tabs>
             <UserTabPanel tabIndex={tabIndex} />
             <TemplateTabPanel tabIndex={tabIndex} />
+            <PlaceTabPanel tabIndex={tabIndex} />
         </Container>
     )
 }
