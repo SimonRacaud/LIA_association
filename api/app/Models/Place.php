@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\PlaceFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -47,5 +48,10 @@ class Place extends Model
     public static function findByLabel(string $label)
     {
         return Place::where("label", $label)->firstOrFail();
+    }
+
+    protected static function newFactory()
+    {
+        return PlaceFactory::new();
     }
 }

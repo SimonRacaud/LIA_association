@@ -44,6 +44,11 @@ class DatabaseSeeder extends Seeder
 //        } catch (\Exception $err) {
 //            dump("Seeded: error while generating templates", $err->getMessage());
 //        }
+//        try {
+//            Place::factory()->count(100)->create();
+//        } catch (\Exception $err) {
+//            dump("Seeded: (factory) error while generating places", $err->getMessage());
+//        }
         try {
             TeamTemplate::updateOrCreate([
                 "title" => "Leclerc sablé / Super U Arnage",

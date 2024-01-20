@@ -17,13 +17,21 @@ class PlaceController extends BaseController
     {
         try {
             $size = $request->query('size');
+            $labelFilter = $request->query('label');
+            $where = [];
 
-            $list = Place::paginate($size == null ? 10 : $size);
+            if ($labelFilter) {
+                $where = [
+                    ["label", "LIKE", '%'.$labelFilter.'%']
+                ];
+            }
+
+            $list = Place::where($where)->paginate($size == null ? 10 : $size);
             return $this->sendCollection(
                 PlaceResource::collection($list),
                 intval($request->query('page')),
                 $size,
-                Place::count(),
+                Place::where($where)->count(),
             );
         } catch (\Exception $exception) {
             return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);
