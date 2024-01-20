@@ -16,8 +16,10 @@ export default class PlaceService extends NetworkService<Place, PlaceDto> {
     return this.instance;
   }
 
-  public async getList(page = 1, size = 10): Promise<Paginated<Place>> {
-    const result: Paginated<PlaceDto> = await this.core.getList(page, size);
+  public async getList(page = 1, size = 10, filter?: string): Promise<Paginated<Place>> {
+    const result: Paginated<PlaceDto> = await this.core.getList(page, size, {
+      label: filter
+    });
 
     return {
       data: result.data.map((d: PlaceDto) => {

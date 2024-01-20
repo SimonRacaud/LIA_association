@@ -1,16 +1,13 @@
 import {
   FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
 } from "@mui/material";
 import { AxiosError } from "axios";
 import Place from "classes/Place";
 import NetErrorBody, { NetFailureBody } from "models/ErrorResponse";
-import Paginated, { PaginationQuery } from "models/Paginated";
+import Paginated, { TxtFilterPaginationQuery } from "models/Paginated";
 import { useEffect, useState } from "react";
 import PlaceService from "services/PlaceService";
+import PaginatedSelect from "./PaginatedSelect";
 
 type SelectPlaceFormProps = {
   place?: Place;
@@ -23,22 +20,35 @@ export default function SelectPlaceForm({
   place,
   setPlace,
   setErrorNet,
-  disable
+  disable,
 }: SelectPlaceFormProps) {
   const [list, setList] = useState<Paginated<Place>>();
-  const [listQuery, setListQuery] = useState<PaginationQuery>({
+  const [listQuery, setListQuery] = useState<TxtFilterPaginationQuery>({
     page: 1,
-    size: 10,
+    size: 20,
   });
   const network = PlaceService.getInstance();
 
   useEffect(() => {
     fetchList();
-  }, []);
+  }, [listQuery]);
 
   const fetchList = async () => {
     try {
-      setList(await network.getList(listQuery.page, listQuery.size));
+      const newList = await network.getList(
+        listQuery.page,
+        listQuery.size,
+        listQuery.filter
+      );
+      if (list && newList.page > list.page) {
+        setList({
+          max: newList.max,
+          page: newList.page,
+          data: [...list.data, ...newList.data],
+        });
+      } else if (newList.page == 1) {
+        setList(newList);
+      }
     } catch (error) {
       const netError = error as AxiosError;
       const errorBody = netError.response?.data as NetErrorBody;
@@ -50,32 +60,42 @@ export default function SelectPlaceForm({
       }
     }
   };
-  const handleChangePlace = (e: SelectChangeEvent) => {
-    const value = e.target.value;
-
-    const newPlace = list?.data.find((p) => p.uuid === value);
-    if (newPlace) {
-      setPlace(newPlace);
+  const filterChoices = (filter: string) => {
+    if (filter === "") {
+      setListQuery({
+        ...listQuery,
+        page: 1,
+        filter: undefined,
+      });
+    } else {
+      setListQuery({
+        ...listQuery,
+        page: 1,
+        filter: filter,
+      });
+    }
+  };
+  const loadNextPage = () => {
+    if (!list || listQuery.page < list?.max) {
+      setListQuery({
+        ...listQuery,
+        page: listQuery.page + 1,
+      });
     }
   };
 
   return (
     <FormControl variant="standard" sx={{ m: 1, minWidth: 300 }}>
-      <InputLabel id="place-label">Lieu</InputLabel>
-      <Select
-        labelId="place-label"
-        defaultValue={place?.uuid}
-        onChange={handleChangePlace}
+      <PaginatedSelect<Place, Place>
+        choices={list?.data}
+        select={place}
+        setSelect={setPlace}
+        getModelLabel={(v: Place) => v.label ?? ""}
+        inputLabel="Lieu"
+        reloadChoices={filterChoices}
+        loadNextPage={loadNextPage}
         disabled={disable}
-      >
-        {list?.data.map((p) => {
-          return (
-            <MenuItem key={p.uuid} value={p.uuid}>
-              {p.label}
-            </MenuItem>
-          );
-        })}
-      </Select>
+      />
     </FormControl>
   );
 }

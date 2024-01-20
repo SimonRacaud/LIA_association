@@ -4,8 +4,9 @@ import { useState } from "react";
 type PaginatedSelectProps<M, S extends M[] | M> = {
   choices?: M[];
   inputLabel: string;
-  select: S;
+  select?: S;
   multiple?: boolean;
+  disabled?: boolean
   getModelLabel: (v: M) => string;
   setSelect: (v: S) => void;
   reloadChoices: (filter: string) => void;
@@ -20,13 +21,14 @@ export default function PaginatedSelect<M, S extends M[] | M>(
     inputLabel,
     select,
     multiple,
+    disabled,
     setSelect,
     getModelLabel,
     reloadChoices,
     loadNextPage,
   } = props;
   const [ lastInputChange, setLastInputChange ] = useState<number>()
-  const REFRESH_RATE_LIMIT = 100; // ms
+  const REFRESH_RATE_LIMIT = 400; // ms
 
   const handleChangeMultiple = (selected: S | null) => {
     if (selected) {
@@ -48,30 +50,11 @@ export default function PaginatedSelect<M, S extends M[] | M>(
         <Autocomplete
             multiple={multiple}
             options={choices}
-            value={select}
+            value={select ?? null}
             getOptionLabel={getModelLabel}
             onChange={(_, v: any) => handleChangeMultiple(v)}
+            disabled={disabled}
             onInputChange={(e, newInputValue) => handleInputChange(newInputValue)}
-
-            // freeSolo
-
-            // loading={loading}
-            // renderInput={(params) => (
-            //     <TextField
-            //       {...params}
-            //       label="Asynchronous"
-            //       InputProps={{
-            //         ...params.InputProps,
-            //         endAdornment: (
-            //           <React.Fragment>
-            //             {loading ? <CircularProgress color="inherit" size={20} /> : null}
-            //             {params.InputProps.endAdornment}
-            //           </React.Fragment>
-            //         ),
-            //       }}
-            //     />
-            //   )}
-
             renderInput={(params) => (
                 <TextField {...params} variant="standard" label={inputLabel} />
             )}
@@ -88,7 +71,7 @@ export default function PaginatedSelect<M, S extends M[] | M>(
                 }
             }}
         />
-      )}
+      ) || <p>Erreur réseau</p>}
     </FormControl>
   );
 }
