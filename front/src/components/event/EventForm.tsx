@@ -1,15 +1,11 @@
 import {
+  Autocomplete,
   Button,
   Card,
-  Checkbox,
   Container,
   Divider,
   FormControl,
   IconButton,
-  InputLabel,
-  ListItemText,
-  MenuItem,
-  OutlinedInput,
   Stack,
   TextField,
   Typography,
@@ -29,63 +25,50 @@ import ErrorNotification from "../ErrorNotification";
 import NetErrorBody, { NetFailureBody } from "models/ErrorResponse";
 import Place from "classes/Place";
 import SelectPlaceForm from "components/SelectPlaceForm";
-import { useUser } from "context/UserContext";
 
 type AddTeamFormProps = {
-  list: Paginated<TeamTemplate> | undefined;
+  list?: Paginated<TeamTemplate>;
   event: Event;
   setEvent: (v: Event) => void;
   setErrorMsg: (m: string) => void;
 };
 
 function AddTeamForm({ list, event, setEvent, setErrorMsg }: AddTeamFormProps) {
-  const [newTemplates, setNewTemplates] = useState<number[]>([]);
+  const [newTemplates, setNewTemplates] = useState<TeamTemplate[]>([]);
 
-  const handleChangeNewTeamTemplate = (event: SelectChangeEvent<number[]>) => {
-    const value = event.target.value;
-
+  const handleChangeNewTeamTemplate = (selected: TeamTemplate[]) => {
     setNewTemplates(
-      typeof value === "string"
-        ? value.split(",").map((v: string) => Number(v))
-        : value
+      selected
     );
   };
   const handleAddNewTeamTemplate = () => {
     if (list && newTemplates.length > 0) {
-      const templatesToAdd = list.data.filter(
-        (v: TeamTemplate, index: number) => {
-          const toAdd: boolean =
-            newTemplates.find((v: number) => v == index) != undefined;
-          if (
-            toAdd &&
-            event.teams.find((t) => v.uuid == t.template.uuid) == undefined
-          ) {
-            return toAdd;
-          }
-          return false;
-        }
-      );
+      // Filter templates already in the event:
+      const toAdd = newTemplates.filter((t: TeamTemplate) => {
+        return (event.teams.find((v) => t.uuid == v.template.uuid) == undefined);
+      });
+      // Add new templates to event:
       setEvent({
         ...event,
         teams: [
           ...event.teams,
-          ...templatesToAdd.map(
+          ...toAdd.map(
             (template: TeamTemplate) => new Team("", template)
           ),
         ],
       });
       setNewTemplates([]); // Empty selection
-      if (templatesToAdd.length == 0) {
+      if (toAdd.length == 0) {
         setErrorMsg("L'équipe existe déjà dans l'évènement");
       }
     }
   };
   const handleSelectAll = () => {
     if (list) {
-      if (list.data.length == newTemplates.length) {
-        setNewTemplates([]);
+      if (list.data.length == newTemplates.length) { // Is full
+        setNewTemplates([]); // Clear all
       } else {
-        setNewTemplates(Array.from(Array(list.data.length).keys()));
+        setNewTemplates(list.data); // Select all
       }
     }
   };
@@ -102,35 +85,22 @@ function AddTeamForm({ list, event, setEvent, setErrorMsg }: AddTeamFormProps) {
         </Button>
       )}
       <FormControl variant="outlined">
-        <InputLabel id="new-team-select-label" sx={{ background: "white" }}>
-          Ajouter des équipes:
-        </InputLabel>
-        <Select
-          labelId="new-team-select-label"
-          id="new-team-select"
-          input={<OutlinedInput />}
-          multiple
-          value={newTemplates}
-          renderValue={(selected: any) =>
-            selected.map((v: number) => list?.data[v].title).join(", ")
-          }
-          onChange={handleChangeNewTeamTemplate}
-        >
-          {list?.data.map((template, index) => (
-            <MenuItem key={template.title} value={index}>
-              <Checkbox
-                checked={
-                  newTemplates.find((v: any) => v === index) != undefined
-                }
+        {list &&
+          <Autocomplete
+            multiple
+            options={list.data}
+            value={newTemplates}
+            getOptionLabel={(option: TeamTemplate) => `${option.title} [${teamTypeToString(option.type)}]`}
+            onChange={(_, v: TeamTemplate[]) => handleChangeNewTeamTemplate(v)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="standard"
+                label="Ajouter des équipes:"
               />
-              <ListItemText
-                primary={`${template.title} [${teamTypeToString(
-                  template.type
-                )}]`}
-              />
-            </MenuItem>
-          ))}
-        </Select>
+            )}
+          />
+        }
       </FormControl>
       <Button onClick={handleAddNewTeamTemplate} variant="contained">
         Ajouter
@@ -152,7 +122,7 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
   const [list, setList] = useState<Paginated<TeamTemplate>>();
   const [listQuery, setListQuery] = useState<PaginationQuery>({
     page: 1,
-    size: 10,
+    size: 999, // TODO : to improve : how to browse paginated templates ?
   });
   const network = TeamTemplateService.getInstance();
 
