@@ -1,45 +1,77 @@
 import {
-  Autocomplete,
   Button,
   Card,
   Container,
   Divider,
-  FormControl,
   IconButton,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { DatePicker } from "@mui/x-date-pickers";
 import Event from "classes/Event";
-import TeamTemplate, { teamTypeToString } from "classes/TeamTemplate";
+import TeamTemplate from "classes/TeamTemplate";
 import { useEffect, useReducer, useState } from "react";
 import Team from "classes/Team";
 import RemoveIcon from "@mui/icons-material/Delete";
 import TeamForm from "../TeamForm";
-import Paginated, { PaginationQuery } from "models/Paginated";
+import Paginated, { TxtFilterPaginationQuery } from "models/Paginated";
 import TeamTemplateService from "services/TeamTemplateService";
 import { AxiosError } from "axios";
 import ErrorNotification from "../ErrorNotification";
 import NetErrorBody, { NetFailureBody } from "models/ErrorResponse";
 import Place from "classes/Place";
 import SelectPlaceForm from "components/SelectPlaceForm";
+import PaginatedSelect from "components/PaginatedSelect";
 
 type AddTeamFormProps = {
-  list?: Paginated<TeamTemplate>;
   event: Event;
   setEvent: (v: Event) => void;
   setErrorMsg: (m: string) => void;
+  setErrorNet: (e: NetErrorBody) => void;
 };
 
-function AddTeamForm({ list, event, setEvent, setErrorMsg }: AddTeamFormProps) {
+function AddTeamForm({ event, setEvent, setErrorMsg, setErrorNet }: AddTeamFormProps) {
   const [newTemplates, setNewTemplates] = useState<TeamTemplate[]>([]);
+  const [list, setList] = useState<Paginated<TeamTemplate>>();
+  const [listQuery, setListQuery] = useState<TxtFilterPaginationQuery>({
+    page: 1,
+    size: 20,
+  });
+  const network = TeamTemplateService.getInstance();
 
-  const handleChangeNewTeamTemplate = (selected: TeamTemplate[]) => {
-    setNewTemplates(
-      selected
-    );
+  useEffect(() => {
+    fetchList();
+  }, [listQuery]);
+
+  const fetchList = async () => {
+    try {
+       const newList = await network.getList(
+        listQuery.page,
+        listQuery.size,
+        event.place?.uuid,
+        listQuery.filter,
+      );
+      if (list && newList.page > list.page) {
+        // Adding next page
+        setList({
+          max: newList.max,
+          page: newList.page,
+          data: [...list.data, ...newList.data]
+        })
+      } else if (newList.page == 1) {
+        setList(newList); // Reload page
+      }
+    } catch (error) {
+      const netError = error as AxiosError;
+      const errorBody = netError.response?.data as NetErrorBody;
+      console.error((error as AxiosError).message);
+      if (errorBody != undefined) {
+        setErrorNet(errorBody);
+      } else {
+        setErrorNet(NetFailureBody);
+      }
+    }
   };
   const handleAddNewTeamTemplate = () => {
     if (list && newTemplates.length > 0) {
@@ -72,6 +104,29 @@ function AddTeamForm({ list, event, setEvent, setErrorMsg }: AddTeamFormProps) {
       }
     }
   };
+  const filterChoices = (filter: string) => {
+    if (filter === "") {
+      setListQuery({
+        ...listQuery,
+        page: 1,
+        filter: undefined
+      });
+    } else {
+      setListQuery({
+        ...listQuery,
+        page: 1,
+        filter: filter
+      });
+    }
+  }
+  const loadNextPage = () => {
+      if (!list || listQuery.page < list?.max) {
+        setListQuery({
+          ...listQuery,
+          page: listQuery.page + 1
+        })
+      }
+  }
 
   return (
     <Stack spacing={2}>
@@ -84,24 +139,16 @@ function AddTeamForm({ list, event, setEvent, setErrorMsg }: AddTeamFormProps) {
           Tout séléctionner
         </Button>
       )}
-      <FormControl variant="outlined">
-        {list &&
-          <Autocomplete
-            multiple
-            options={list.data}
-            value={newTemplates}
-            getOptionLabel={(option: TeamTemplate) => `${option.title} [${teamTypeToString(option.type)}]`}
-            onChange={(_, v: TeamTemplate[]) => handleChangeNewTeamTemplate(v)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="standard"
-                label="Ajouter des équipes:"
-              />
-            )}
-          />
-        }
-      </FormControl>
+      <PaginatedSelect
+        choices={list?.data}
+        select={newTemplates}
+        getModelLabel={(v: TeamTemplate) => v.title}
+        inputLabel="Ajouter des équipes:"
+        setSelect={setNewTemplates}
+        multiple={true}
+        reloadChoices={filterChoices}
+        loadNextPage={loadNextPage}
+      />
       <Button onClick={handleAddNewTeamTemplate} variant="contained">
         Ajouter
       </Button>
@@ -119,37 +166,7 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const [errorMsg, setErrorMsg] = useState<string>();
   const [errorNet, setErrorNet] = useState<NetErrorBody>();
-  const [list, setList] = useState<Paginated<TeamTemplate>>();
-  const [listQuery, setListQuery] = useState<PaginationQuery>({
-    page: 1,
-    size: 999, // TODO : to improve : how to browse paginated templates ?
-  });
-  const network = TeamTemplateService.getInstance();
-
-  useEffect(() => {
-    fetchList();
-  }, []);
-
-  const fetchList = async () => {
-    try {
-      setList(
-        await network.getList(
-          listQuery.page,
-          listQuery.size,
-          event.place?.uuid
-        )
-      );
-    } catch (error) {
-      const netError = error as AxiosError;
-      const errorBody = netError.response?.data as NetErrorBody;
-      console.error((error as AxiosError).message);
-      if (errorBody != undefined) {
-        setErrorNet(errorBody);
-      } else {
-        setErrorNet(NetFailureBody);
-      }
-    }
-  };
+  
   const onSubmitForm = () => {
     onSubmit(event);
   };
@@ -230,10 +247,10 @@ export default function EventForm({ initEvent, onSubmit }: EventFormProps) {
       })}
       <Divider />
       <AddTeamForm
-        list={list}
         event={event}
         setEvent={setEvent}
         setErrorMsg={setErrorMsg}
+        setErrorNet={setErrorNet}
       />
       <Divider />
       <Container

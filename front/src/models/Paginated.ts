@@ -11,3 +11,7 @@ export interface PaginationQuery
     page: number, // Current page
     size: number // Max number of item
 }
+
+export interface TxtFilterPaginationQuery extends PaginationQuery {
+    filter?: string
+}
