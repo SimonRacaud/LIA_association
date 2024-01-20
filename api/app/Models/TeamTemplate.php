@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\TeamTemplateFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -105,5 +106,10 @@ class TeamTemplate extends Model
     public function place(): BelongsTo
     {
         return $this->belongsTo(Place::class, 'place_uuid', 'uuid')->withDefault();
+    }
+
+    protected static function newFactory(): TeamTemplateFactory|\Illuminate\Database\Eloquent\Factories\Factory
+    {
+        return TeamTemplateFactory::new();
     }
 }

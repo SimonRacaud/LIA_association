@@ -18,17 +18,28 @@ class TeamTemplateController extends BaseController
         try {
             $size = $request->query('size');
             $placeId = $request->query('placeId');
+            $titleFilter = $request->query('titleFilter');
+            $where = [];
 
             if ($placeId) {
-                $list = TeamTemplate::where("place_uuid", $placeId)->paginate($size == null ? 10 : $size);
-            } else {
-                $list = TeamTemplate::paginate($size == null ? 10 : $size);
+                $where = [
+                    ...$where,
+                    ["place_uuid", '=', $placeId]
+                ];
             }
+            if ($titleFilter) {
+                $where = [
+                    ...$where,
+                    ["title", 'LIKE', '%'.$titleFilter.'%']
+                ];
+            }
+            $list = TeamTemplate::where($where)->paginate($size == null ? 10 : $size);
+            $count = TeamTemplate::where($where)->count();
             return $this->sendCollection(
                 TeamTemplateResource::collection($list),
                 intval($request->query('page')),
                 $size,
-                TeamTemplate::count(),
+                $count,
             );
         } catch (\Exception $exception) {
             return $this->sendError(ErrorMessage::FAILURE, $exception->getMessage(), 500);

@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
                 'label' => 'Étival-lès-le-Mans'
             ]);
         } catch (UniqueConstraintViolationException $e) {
-            $placeAllonnes = Place::findByLabel('Allones');
+            $placeAllonnes = Place::findByLabel("Allonnes");
         }
         try {
             \App\Models\User::updateOrCreate([
@@ -39,6 +39,11 @@ class DatabaseSeeder extends Seeder
         } catch (UniqueConstraintViolationException $e) {
             dump("Seeder: admin user not created.", $e->getMessage());
         }
+//        try {
+//            TeamTemplate::factory()->count(100)->create();
+//        } catch (\Exception $err) {
+//            dump("Seeded: error while generating templates", $err->getMessage());
+//        }
         try {
             TeamTemplate::updateOrCreate([
                 "title" => "Leclerc sablé / Super U Arnage",
