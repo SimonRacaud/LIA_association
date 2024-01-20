@@ -13,7 +13,7 @@ export default function ErrorNotification({ show, onClose, message, netError }: 
     return (
         <Snackbar open={show} autoHideDuration={3000} onClose={onClose}>
             <Alert onClose={onClose} severity="error" sx={{ width: '100%' }}>
-            {netError && `${netError.message}: ${netError.data}`
+            {netError && `${netError.message}: ${netError.data ?? ''}`
                 || message && message
             }
             </Alert>
