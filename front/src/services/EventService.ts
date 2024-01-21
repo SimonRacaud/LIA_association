@@ -54,7 +54,7 @@ export default class EventService extends NetworkService<Event, EventDto> {
     await Promise.all(
       data.teams.map(async (team) => {
         // Check if the team has to be added to the event
-        const search = event.teams?.find((t: Team) => t.uuid === team.uuid);
+        const search = event.teams?.find((t: Team) => t.template.uuid === team.template.uuid);
 
         if (!search) {
           await TeamService.create({
@@ -70,7 +70,7 @@ export default class EventService extends NetworkService<Event, EventDto> {
       await Promise.all(
         event.teams?.map(async (team) => {
           // Check if the team is no longer in the event
-          const search = data.teams.find((t: Team) => t.uuid === team.uuid);
+          const search = data.teams.find((t: Team) => t.template.uuid === team.template.uuid);
 
           if (!search) {
             await TeamService.remove(team.uuid);
