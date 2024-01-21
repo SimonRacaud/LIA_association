@@ -74,20 +74,20 @@ class TeamTemplate extends Model
     public static function validation(): array
     {
         return [
-            'title' => 'required|max:255|unique:team_templates',
+            'title' => 'required|min:1|max:255|unique:team_templates',
             'type' => ['required', Rule::in(array_column(TeamType::cases(), 'value'))],
             'note' => 'max:255',
-            'maxMember' => 'required|numeric',
+            'maxMember' => 'required|numeric|min:0',
             'place_uuid' => ['uuid', 'exists:App\Models\Place,uuid'],
         ];
     }
     public static function validationUpdate(string $uuid): array
     {
         return [
-            'title' => ['max:255', Rule::unique('team_templates')->ignore($uuid, 'uuid')],
+            'title' => ['max:255', 'min:1', Rule::unique('team_templates')->ignore($uuid, 'uuid')],
             'type' => [Rule::in(array_column(TeamType::cases(), 'value'))],
             'note' => 'max:255',
-            'maxMember' => 'numeric',
+            'maxMember' => 'numeric|min:0',
             'place_uuid' => ['uuid', 'exists:App\Models\Place,uuid'],
         ];
     }

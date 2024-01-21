@@ -54,7 +54,7 @@ class User extends Authenticatable
 
     public static function validation() {
         return [
-            'username' => ['required', 'unique:users', 'max:255'],
+            'username' => ['required', 'unique:users', 'max:255', 'min:1'],
             'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'min:8'],
             'role' => ['required', Rule::in(array_column(UserRole::cases(), 'value'))],
@@ -64,7 +64,7 @@ class User extends Authenticatable
 
     public static function validationUpdate($id) {
         return [
-            'username' => [Rule::unique('users')->ignore($id, 'id'), 'max:255'],
+            'username' => [Rule::unique('users')->ignore($id, 'id'), 'max:255', 'min:1'],
             'email' => ['email', Rule::unique('users')->ignore($id, 'id')],
             'password' => 'min:8',
             'role' => [Rule::in(array_column(UserRole::cases(), 'value'))],

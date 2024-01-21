@@ -54,15 +54,11 @@ class Event extends Model
         'title' => 'required|max:255|min:1',
         'date' => 'required|date_format:d/m/Y',
         'place_uuid' => ['required', 'uuid', 'exists:App\Models\Place,uuid'],
-//        'teams' => 'array',
-//        "teams.*"  => "exists:App\Models\Team,uuid",
     ];
     public static array $validationUpdate = [
         'title' => 'max:255|min:1',
         'date' => 'date_format:d/m/Y',
         'place_uuid' => ['uuid', 'exists:App\Models\Place,uuid'],
-//        'teams' => 'array',
-//        "teams.*"  => "exists:App\Models\Team,uuid",
     ];
 
     public static function booted(): void
